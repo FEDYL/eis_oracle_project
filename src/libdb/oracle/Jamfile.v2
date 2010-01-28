@@ -1,0 +1,7 @@
+
+lib libdboracle :
+	factory.cpp connection.cpp resultset.cpp field.cpp sequence.cpp transaction.cpp oracleconnection.cpp
+:   <include>$(INCLUDES)
+    <include>$(ORACLE)/include
+;
+

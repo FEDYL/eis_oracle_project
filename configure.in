@@ -1,0 +1,112 @@
+AC_PREREQ(2.53)
+AC_INIT(configure.in)
+AC_CONFIG_AUX_DIR(config)
+AC_CANONICAL_SYSTEM
+dnl AC_PREFIX_DEFAULT(/usr/local/is/core)
+
+AM_INIT_AUTOMAKE(brserver, 5.1.${BUILD_VER})
+AM_CONFIG_HEADER(config.h)
+
+AC_DEFINE_UNQUOTED( BUILD_VER, ${BUILD_VER}, [ version of this build])
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_CXX
+AM_DISABLE_STATIC
+AM_PROG_LIBTOOL
+
+dnl include autoconf macros
+EIS_ACLOCAL_INCLUDE(m4)
+
+AC_PROG_ILU
+dnl AC_PROG_MD5
+AC_PROG_MT
+dnl AC_PROG_EXPAT
+AC_PROG_GMP
+dnl AC_PROG_ICONV
+dnl AC_PROG_CURL
+dnl AC_PROG_REGEXX
+AC_PROG_STLPORT
+dnl AC_PROG_AD
+dnl AC_PROG_ICU
+
+dnl AC_PROG_BOTAN
+AC_PROG_MYSQL
+dnl AC_PROG_GSOAP
+dnl AC_PROG_ANTLR
+AC_PROG_BOOST
+dnl AC_PROG_XERCES
+dnl AC_PROG_ARABICA
+AC_PROG_FIXED
+dnl AC_PROG_JSON
+dnl AC_PROG_BERKELEYDB
+dnl AC_PROG_CTPP
+dnl AC_PROG_IB
+
+AC_PROG_OCCI
+
+AC_COREDEF
+dnl AC_CORE
+
+dnl debug
+builtin( include, m4/debug.m4)
+
+dnl    config vars    
+AC_HOSTOSDEFINE
+dnl AC_CONF_DIR    
+AC_CORESERVER    
+dnl AC_CONF_DB
+AC_QUERY_LOG
+
+dnl Checks for libraries.
+
+dnl Checks for header files.
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_LANG_RESTORE
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+  
+AC_ARG_ENABLE(portbuild,
+[  --enable-portbuild    Port build],
+[case "${enableval}" in
+  yes)
+    portbuild=true
+    ;;
+  no)
+    portbuild=false
+    AC_DEFINE_UNQUOTED(EIS_DISABLE_SECURITY, "EIS_DISABLE_SECURITY", "Disable security checks" )
+      ;;
+  *)
+    AC_MSG_ERROR(bad value ${enableval} for --enable-portbuild)
+    ;;
+esac],[portbuild=false])
+AM_CONDITIONAL(portbuild, test x$portbuild = xtrue)
+
+if test x$portbuild = xfalse ; then
+AC_PROG_TUT
+AC_PROG_QUICKMOCK
+fi
+
+dnl for src dirs    
+AC_OUTPUT([ 
+    Makefile \
+    m4/Makefile \
+    common/Makefile \
+    common/idl/Makefile \
+    build/Makefile \
+    build/include/Makefile \
+    build/lib/Makefile \
+    src/Makefile \
+    src/common/Makefile \
+    src/common/misc/Makefile \
+	src/corba/Makefile \
+    src/logger/Makefile \
+    src/libdb/Makefile \
+    src/libdb/common/Makefile \
+    src/libdb/mysql/Makefile \
+    src/libdb/mocks/Makefile \
+    src/libdb/oracle/Makefile \
+	tests/Makefile \
+	tests/libdb/Makefile
+    ])
