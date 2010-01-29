@@ -94,9 +94,7 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), _prec(field.precision), _scale(field.scale) {
-		init();
-	}
+	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), _prec(field.precision), _scale(field.scale) { }
 
 	//! Реализация методов DB::Field.
 	int asLong() const;
@@ -136,19 +134,8 @@ public:
 	
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
-	
-	//! Метод заполняющий поле данными.
-	void setData(oracle::occi::Number data) {
-		_data = data;
-		init();
-	}
 
 private:
-	//! Инициализирует значение поля.
-	void init() {
-		//setNull(false);
-	}
-
 	oracle::occi::Number _data;	//!< - данные.
 	unsigned int _prec; 		//!< - разрядность.
 	unsigned int _scale; 		//!< - знаков после запятой.
@@ -168,9 +155,7 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	StringField(const ORACLE_FIELD &field, std::string data) : Field(field), _data(data) {
-		init();
-	}
+	StringField(const ORACLE_FIELD &field, std::string data) : Field(field), _data(data) {	}
 
 	//! Реализация методов DB::Field.
 	const std::string & asString() const;
@@ -195,18 +180,7 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
-	//! Метод заполняющий поле данными.
-	void setData(std::string data) {
-		_data = data;
-		init();
-	}
-	
 private:
-	//! Проверяет значение поля _data.
-	void init() {
-	//	setNull(false);
-	}
-
 	std::string _data;	//!< - данные.
 };
 
