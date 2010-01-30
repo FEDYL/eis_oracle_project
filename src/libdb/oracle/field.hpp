@@ -231,14 +231,18 @@ private:
 	//! Проверяет значение поля _data и переводит его в форматы eis_date::datetime, eis_date::time и eis_date::date.
 	void convertType() {
 		unsigned int hour, minute, sec, sc;	// параметры времени.
-		int year;				// параметр даты.
-		unsigned int month, day;		// параметры даты.
+		int zone_hour, zone_minute;		// параметры часового пояса.
+		int year; unsigned int month, day;	// параметры даты.
+
 		_data.getTime(hour, minute, sec, sc);
+		_data.getTimeZoneOffset(zone_hour, zone_minute);
 		_data.getDate(year, month, day);
 
-		_eis_time_data.set_hour_min_sec(hour, minute, sec);
+		_eis_time_data.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
+
 		_eis_date_data.set_year_month_day(year, month, day);
-		_eis_datetime_data.set_hour_min_sec(hour, minute, sec);
+
+		_eis_datetime_data.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
 		_eis_datetime_data.set_year_month_day(year, month, day);
 	}
 	
@@ -297,7 +301,6 @@ private:
 		instream->readBuffer(buffer, size);
 		_db_data.setData(size, buffer);
 		_data.closeStream (instream);
-		_data.close();
 	}
 	oracle::occi::Blob _data;	//!< - данные полученые из оракла.
 	DB::Blob _db_data;		//!< - данные для работы.

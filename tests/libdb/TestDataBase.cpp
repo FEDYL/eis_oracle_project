@@ -73,7 +73,7 @@ void testDataBase(bool isDropOldDB) {
 		PRINT_INFO_END
 
 		PRINT_INFO_BEGIN("Create insert 1st row query")
-		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (1, 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, 'e', 1, 'One', '12', to_date('2009-10-20','yyyy-mm-dd'), to_timestamp('8:23:14', 'hh:mi:ss'), to_timestamp('1990-01-01 11:22:33', 'yyyy-mm-dd hh:mi:ss'))";
+		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (1, 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, 'e', 1, 'One', '0', to_date('2009-10-20','yyyy-mm-dd'), to_timestamp('8:23:14', 'hh:mi:ss'), to_timestamp('1990-01-01 11:22:33', 'yyyy-mm-dd hh:mi:ss'))";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -81,7 +81,7 @@ void testDataBase(bool isDropOldDB) {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 2nd row query")
-		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (2, 0, -2, 123, 9887, 999826, -1.4, 3431.00043, '0', 0, 'Two', '7f', to_date('1990-01-01','yyyy-mm-dd'), to_timestamp('9:00', 'hh:mi'), to_timestamp('1990-01-01 08:00', 'yyyy-mm-dd hh:mi'))";
+		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (2, 0, -2, 123, 9887, 999826, -1.4, 3431.00043, '0', 0, 'Two', '0', to_date('1990-01-01','yyyy-mm-dd'), to_timestamp('9:00', 'hh:mi'), to_timestamp('1990-01-01 08:00', 'yyyy-mm-dd hh:mi'))";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -89,7 +89,7 @@ void testDataBase(bool isDropOldDB) {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 3rd row query")
-		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (3, 12, 176, 22, 123, 1628392, 89, -345.0063, '>', 1, 'three', 'a', to_date('1997-12-31','yyyy-mm-dd'), to_timestamp('3:00:01', 'hh:mi:ss'), to_timestamp('1990-1-01 10:00:01', 'yyyy-mm-dd hh:mi:ss'))";
+		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (3, 12, 176, 22, 123, 1628392, 89, -345.0063, '>', 1, 'three', '0', to_date('1997-12-31','yyyy-mm-dd'), to_timestamp('3:00:01', 'hh:mi:ss'), to_timestamp('1990-1-01 10:00:01', 'yyyy-mm-dd hh:mi:ss'))";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -111,21 +111,21 @@ void testDataBase(bool isDropOldDB) {
 		for(unsigned int j = 0; j < _size; ++j) {
 			std::cout << "row #" << j + 1 << ":" << std::endl;
 			std::cout 
-				<< "LongField = "	  << row[j * 15]->asLong() 
-				<< ", ULongField = "	  << row[j * 15 + 1]->asULong() 
-				<< ", ShortField = "	  << row[j * 15 + 2]->asShort() 
-				<< ", UShortField = "	  << row[j * 15 + 3]->asUShort() 			
-				<< ", LongLongField = "	  << row[j * 15 + 4]->asLongLong() 
-				<< ", ULongLongField = "  << row[j * 15 + 5]->asULongLong() 
-				<< ", FloatField = "	  << row[j * 15 + 6]->asFloat() 
-				<< ", DoubleField = "	  << row[j * 15 + 7]->asDouble() 
-				<< ", CharField = '"	  << row[j * 15 + 8]->asChar()
-	 			<< "', BoolField = "	  << row[j * 15 + 9]->asBool() 
-				<< ", StringField = '"    << row[j * 15 + 10]->asString()
-				<< "', BlobField = '"	  << row[j * 15 + 11]->asBlob()
-				<< "', DateField = "	  << row[j * 15 + 12]->asDate() 
-				<< ", TimeField = "	  << row[j * 15 + 13]->asTime() 
-				<< ", DateTimeField = "	  << row[j * 15 + 14]->asDateTime() << std::endl;
+				<< "\tLongField = "		<< row[j * 15]->asLong() 
+				<< "\n\tULongField = "		<< row[j * 15 + 1]->asULong() 
+				<< "\n\tShortField = "		<< row[j * 15 + 2]->asShort() 
+				<< "\n\tUShortField = "		<< row[j * 15 + 3]->asUShort() 			
+				<< "\n\tLongLongField = "	<< row[j * 15 + 4]->asLongLong() 
+				<< "\n\tULongLongField = "	<< row[j * 15 + 5]->asULongLong() 
+				<< "\n\tFloatField = "		<< row[j * 15 + 6]->asFloat() 
+				<< "\n\tDoubleField = "		<< row[j * 15 + 7]->asDouble() 
+				<< "\n\tCharField = "		<< row[j * 15 + 8]->asChar()
+	 			<< "\n\tBoolField = "		<< row[j * 15 + 9]->asBool() 
+				<< "\n\tStringField = "		<< row[j * 15 + 10]->asString()
+				<< "\n\tBlobField = "	  	<< row[j * 15 + 11]->asBlob()
+				<< "\tDateField = "	  	<< row[j * 15 + 12]->asDate() 
+				<< "\n\tTimeField = "	  	<< row[j * 15 + 13]->asTime() 
+				<< "\n\tDateTimeField = "	<< row[j * 15 + 14]->asDateTime() << std::endl;
 		}
 
 		PRINT_INFO_BEGIN("Drop table")
