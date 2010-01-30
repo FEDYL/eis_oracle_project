@@ -35,7 +35,6 @@ public:
 	}
 	//! Деструктор.
 	virtual ~ResultSet() {
-		std::cout << "~ResultSet();\n";
 		m_stmt->closeResultSet(m_resultSet);
 		m_connection->terminateStatement(m_stmt);
 	}

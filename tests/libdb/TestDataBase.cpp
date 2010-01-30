@@ -106,8 +106,7 @@ void testDataBase(bool isDropOldDB) {
 
 		PRINT_INFO("Result of select:")		
 		DB::ResultSet::iterator i = rs->begin();
-		DB::ResultRow * row;
-		&row = *i;
+		DB::ResultRow &row = *i;
 		unsigned int _size = rs->size();
 		for(unsigned int j = 0; j < _size; ++j) {
 			std::cout << "row #" << j + 1 << ":" << std::endl;

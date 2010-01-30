@@ -46,7 +46,6 @@ DB::InternalConnection() {
 }
 
 DB_Oracle::InternalConnection::~InternalConnection() {
-	std::cout << "~InternalConnection();\n";
 	OracleConnection::terminateConnection(m_orclConn);
 }
 

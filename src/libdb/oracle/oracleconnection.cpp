@@ -21,7 +21,6 @@ DB_Oracle::OracleConnection * DB_Oracle::OracleConnection::createConnection(std:
 }
 
 void DB_Oracle::OracleConnection::terminateConnection(OracleConnection * connection) {
-	std::cout << "connection->terminateConnection();\n";
 	connection->m_environment->terminateConnection(connection->m_connection);
 	Environment::terminateEnvironment(connection->m_environment);
 	delete connection;
