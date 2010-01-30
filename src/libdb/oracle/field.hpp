@@ -261,7 +261,7 @@ public:
 	  Конструирует объект на основе данных своих аргументов.
 	 */
 	BlobField(const ORACLE_FIELD &field, oracle::occi::Blob data) : Field(field), _data(data) {
-		init();
+		convertType();
 	}
 
 	//! Реализация методов DB::Field.
@@ -285,17 +285,17 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
-	//! Метод заполняющий поле данными.
-	void setData(oracle::occi::Blob data) {
-		_data = data;
-		init();
-	}
-
 private:
-	//! Проверяет значение поля _data и переводит его в другой формат.
-	void init() {
-		// _data -> _db_data;
-		//setNull(false)
+	//! Проверяет значение поля _data и переводит его в формат DB::Blob.
+	void convertType() {
+		int size = _data.length();
+		oracle::occi::Stream * instream = _data.getStream(1, 0);
+		char * buffer = new char[size];
+		memset(buffer, NULL, size);
+		instream->readBuffer(buffer, size);
+		_db_data.setData(size, buffer);
+		_data.closeStream (instream);
+		_data.close();
 	}
 	oracle::occi::Blob _data;	//!< - данные полученые из оракла.
 	DB::Blob _db_data;		//!< - данные для работы.
