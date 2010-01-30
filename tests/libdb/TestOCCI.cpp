@@ -97,7 +97,7 @@ public:
 	void runSample() throw (SQLException) {
 		Environment *env = Environment::createEnvironment (Environment::DEFAULT);
 		try {
-			Connection *conn = env->createConnection ("olezhka", "qaz", "");
+			Connection *conn = env->createConnection ("system", "12345", "");
 			createTable(conn);
 			insertRows(conn);
 			/* Reading a populated blob & printing its property. */

@@ -53,19 +53,21 @@ void DB_Oracle::ResultSet::fetchFields() {
 void DB_Oracle::ResultSet::next(difference_type pos) {
 	if(eof(pos)) 
 		return;
-	m_eof = m_resultSet->next();
+	m_resultSet->next();
 }
 
 void DB_Oracle::ResultSet::getData(difference_type pos, DB::ResultRow & atrow) {
 	if(pos > size())
 		throw(DB::XDBError("Requisting position is invalid"));
-
 	if(eof(pos))
 		return;
+	if(pos == 0)
+		next(pos);
+
+	if(atrow.size() == 0)	
+		fetchFields();
 
 	DB::Field * field;
-	if(atrow.size() == 0)
-		fetchFields();
 	for(unsigned int i = 0; i < m_numCols; ++i) {
 		switch(m_fields[i].type) {
 		case ORACLE_FIELD::FIELD_TYPE_NUMBER:
@@ -85,7 +87,4 @@ void DB_Oracle::ResultSet::getData(difference_type pos, DB::ResultRow & atrow) {
 		}
 		atrow.push(m_fields[i].name, field);
 	}
-	next(pos + 1);
-	getData(pos + 1, atrow);
-	m_eof = 0;
 }

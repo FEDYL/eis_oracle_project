@@ -22,7 +22,7 @@ struct ORACLE_FIELD {
 	static const unsigned int FIELD_TYPE_TIMESTAMP = 0xBB;
 	static const unsigned int FIELD_TYPE_STRING = 0x1;
 	static const unsigned int FIELD_TYPE_BLOB = 0x71;
-	
+
 	std::string name;		//!< - имя поля.
 	std::string table;	  	//!< - имя таблицы, из которой было выбрано это поле.
 	std::string def;		//!< - значение поля по умолчанию.
@@ -94,7 +94,7 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), _prec(field.precision), _scale(field.scale) { }
+	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), _numeric_data(field.precision, field.scale, (double)data) { }
 
 	//! Реализация методов DB::Field.
 	int asLong() const;
@@ -137,8 +137,7 @@ public:
 
 private:
 	oracle::occi::Number _data;	//!< - данные.
-	unsigned int _prec; 		//!< - разрядность.
-	unsigned int _scale; 		//!< - знаков после запятой.
+	Numeric	_numeric_data;		//!< - данные в другом формате.
 };
 
 
@@ -155,7 +154,9 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	StringField(const ORACLE_FIELD &field, std::string data) : Field(field), _data(data) {	}
+	StringField(const ORACLE_FIELD &field, std::string data) : Field(field) {
+		_data.assign(data);
+	}
 
 	//! Реализация методов DB::Field.
 	const std::string & asString() const;

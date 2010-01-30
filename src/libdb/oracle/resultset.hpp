@@ -29,9 +29,7 @@ public:
 		m_connection = connection;		
 		m_stmt = m_connection->createStatement(query);
 		m_resultSet = m_stmt->executeQuery();
-		m_resultSet->next();
 		m_numRows = calcSize(query);	
-		m_eof = 1;
 	}
 	//! Деструктор.
 	virtual ~ResultSet() {
@@ -61,8 +59,6 @@ private:
 
 	OracleFields m_fields;				//!< - информация о полях результата.
 
-	unsigned int m_eof;				//!< - флаг конца. Если ноль - методы next() и getData() перестают что либо делать.
-
 protected:
 	//! Реализация метода DB::ResultSet::next().
 	virtual void next(difference_type pos);
@@ -70,7 +66,7 @@ protected:
 	virtual void getData(difference_type pos, DB::ResultRow & row);
 	//! Реализация метода DB::ResultSet::eof().
 	virtual bool eof(difference_type pos) const {
-		return !(bool)m_eof;
+		return (pos >= size());
 	}
 };
 

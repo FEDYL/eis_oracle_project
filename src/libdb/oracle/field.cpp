@@ -102,7 +102,7 @@ const Numeric & DB_Oracle::NumberField::asNumeric() const {
 		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
 		throw err;
 	} else
-		return Numeric(_prec, _scale, (double)_data);
+		return _numeric_data;
 }
 
 void DB_Oracle::NumberField::assignAny(CORBA::Any &value) const {
@@ -144,7 +144,6 @@ char DB_Oracle::StringField::asChar() const {
 		return (char)_data[0];
 }
 
-
 void DB_Oracle::StringField::assignAny(CORBA::Any &value) const {
 	if(isNull())
 		value.iluDeleteContent();
@@ -156,7 +155,7 @@ std::ostream & DB_Oracle::StringField::put(std::ostream & os) const {
 	if(isNull()) 
 		os << "NULL";
 	else
-		os << _data;
+		os << _data.c_str();
 	return os;
 }
 
