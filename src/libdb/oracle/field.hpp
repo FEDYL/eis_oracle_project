@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "occi.h"
+
 #include "libdb/common/field.hpp"
 
 namespace DB_Oracle {
@@ -29,7 +31,7 @@ struct ORACLE_FIELD {
 	unsigned int length;		//!< - размер поля.
 	unsigned int precision;		//!< - разрядность. Только для типа FIELD_TYPE_NUMBER.
 	unsigned int scale;		//!< - знаки после запятой. Только для типа FIELD_TYPE_NUMBER.
-	unsigned int type;
+	unsigned int type;		//!< - тип поля.
 };
 
 //! Поле базы данных.
@@ -50,7 +52,7 @@ public:
 	Field(const Field &src) : DB::Field(src), _name(src._name), _table(src._table) { }
 
 	//! Деструктор.
-	virtual ~Field() { }
+	virtual ~Field() { std::cout << "~Field();\n"; }
 
 	//! Оператор присваивания.
 	Field& operator=(const Field &src) {
@@ -63,7 +65,9 @@ public:
 	/*!
 	  Пустая она, так как объекты DB_Oracle::Field не создаются из const char *
 	 */
-	void setData(size_t, const char *) { }
+	void setData(size_t, const char *) { 
+		throw DB::XDBError("This operation is not supported: Field::setData()");
+	}
 	//! Пустая реализация метода DB::Field::c_str()
 	/*!
 	  Пустая она, так как объекты DB_Oracle::Field не создаются из const char *
@@ -94,7 +98,10 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), _numeric_data(field.precision, field.scale, (double)data) { }
+	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), 
+								_numeric_data(field.precision - field.scale, field.scale, (double)data) { }
+	
+	~NumberField() { std::cout << "~NumberField();" << std::endl; }
 
 	//! Реализация методов DB::Field.
 	int asLong() const;
@@ -158,6 +165,8 @@ public:
 		_data.assign(data);
 	}
 
+	~StringField() { std::cout << "~StringField();" << std::endl; }
+
 	//! Реализация методов DB::Field.
 	const std::string & asString() const;
 	char asChar() const;
@@ -180,6 +189,11 @@ public:
 
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
+
+	//! Реализация метода DB::Field::c_str().
+	const char * c_str() const { 
+		return _data.c_str(); 
+	}
 
 private:
 	std::string _data;	//!< - данные.
@@ -227,6 +241,8 @@ public:
 
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
+
+	
 
 private:
 	//! Проверяет значение поля _data и переводит его в форматы eis_date::datetime, eis_date::time и eis_date::date.

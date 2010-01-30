@@ -1,4 +1,6 @@
 #include "Tests.h"
+#include "libdb/oracle/field.hpp"
+#include <vector>
 
 void testDataBase(bool isDropOldDB) {
 	DB_Oracle::Factory::createInstance();
@@ -63,7 +65,10 @@ void testDataBase(bool isDropOldDB) {
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Create DateTimeField field")
 		table1->addFieldDef( new DB_Oracle::DateTimeFieldDef("DateTimeField") );
-		PRINT_INFO_END 
+		PRINT_INFO_END
+		PRINT_INFO_BEGIN("Create Numeric field")
+		table1->addFieldDef( new DB_Oracle::NumericFieldDef("NumericField", 7, 4) );
+		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Set primary key")
 		table1->addPrimaryKey().addFieldDef("LongField");
 		PRINT_INFO_END
@@ -73,7 +78,7 @@ void testDataBase(bool isDropOldDB) {
 		PRINT_INFO_END
 
 		PRINT_INFO_BEGIN("Create insert 1st row query")
-		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (1, 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, 'e', 1, 'One', '12', to_date('2009-10-20','yyyy-mm-dd'), to_timestamp('8:23:14', 'hh:mi:ss'), to_timestamp('1990-01-01 11:22:33', 'yyyy-mm-dd hh:mi:ss'))";
+		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField, NumericField) VALUES (1, 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, 'e', 1, 'One', '12', to_date('2009-10-20','yyyy-mm-dd'), to_timestamp('8:23:14', 'hh:mi:ss'), to_timestamp('1990-01-01 11:22:33', 'yyyy-mm-dd hh:mi:ss'), 123.12)";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -81,7 +86,7 @@ void testDataBase(bool isDropOldDB) {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 2nd row query")
-		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (2, 0, -2, 123, 9887, 999826, -1.4, 3431.00043, '0', 0, 'Two', '7f', to_date('1990-01-01','yyyy-mm-dd'), to_timestamp('9:00', 'hh:mi'), to_timestamp('1990-01-01 08:00', 'yyyy-mm-dd hh:mi'))";
+		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField, NumericField) VALUES (2, 0, -2, 123, 9887, 999826, -1.4, 3431.00043, '0', 0, 'Two', '7f', to_date('1990-01-01','yyyy-mm-dd'), to_timestamp('9:00', 'hh:mi'), to_timestamp('1990-01-01 08:00', 'yyyy-mm-dd hh:mi'), 66.4)";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -89,7 +94,7 @@ void testDataBase(bool isDropOldDB) {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 3rd row query")
-		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (3, 12, 176, 22, 123, 1628392, 89, -345.0063, '>', 1, 'three', 'a', to_date('1997-12-31','yyyy-mm-dd'), to_timestamp('3:00:01', 'hh:mi:ss'), to_timestamp('1990-1-01 10:00:01', 'yyyy-mm-dd hh:mi:ss'))";
+		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField, StringField, BlobField, DateField, TimeField, DateTimeField, NumericField) VALUES (3, 12, 176, 22, 123, 1628392, 89, -345.0063, '>', 1, 'three', 'a', to_date('1997-12-31','yyyy-mm-dd'), to_timestamp('3:00:01', 'hh:mi:ss'), to_timestamp('1990-1-01 10:00:01', 'yyyy-mm-dd hh:mi:ss'), 0)";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -110,22 +115,24 @@ void testDataBase(bool isDropOldDB) {
 			std::cout << "row #" << k + 1 << ":" << std::endl;
 			DB::ResultRow &row = *i;
 			std::cout
-				<< "\tLongField = "		<< row[k * 15]->asLong()
-				<< "\n\tULongField = "		<< row[k * 15 + 1]->asULong()
-				<< "\n\tShortField = "		<< row[k * 15 + 2]->asShort()
-				<< "\n\tUShortField = "		<< row[k * 15 + 3]->asUShort()
-				<< "\n\tLongLongField = "	<< row[k * 15 + 4]->asLongLong()
-				<< "\n\tULongLongField = "	<< row[k * 15 + 5]->asULongLong()
-				<< "\n\tFloatField = "		<< row[k * 15 + 6]->asFloat()
-				<< "\n\tDoubleField = "		<< row[k * 15 + 7]->asDouble()
-				<< "\n\tCharField = '"		<< row[k * 15 + 8]->asChar()
-	 			<< "'\n\tBoolField = "		<< row[k * 15 + 9]->asBool()
-				<< "\n\tStringField = '"	<< row[k * 15 + 10]->asString()
-				<< "'\n\tBlobField = "		<< row[k * 15 + 11]->asBlob()
-				<< "\tDateField = "		<< row[k * 15 + 12]->asDate()
-				<< "\n\tTimeField = "		<< row[k * 15 + 13]->asTime()
-				<< "\n\tDateTimeField = "	<< row[k * 15 + 14]->asDateTime() << std::endl;
+				<< "\tLongField = "		<< row[k * 16]->asLong()
+				<< "\n\tULongField = "		<< row[k * 16 + 1]->asULong()
+				<< "\n\tShortField = "		<< row[k * 16 + 2]->asShort()
+				<< "\n\tUShortField = "		<< row[k * 16 + 3]->asUShort()
+				<< "\n\tLongLongField = "	<< row[k * 16 + 4]->asLongLong()
+				<< "\n\tULongLongField = "	<< row[k * 16 + 5]->asULongLong()
+				<< "\n\tFloatField = "		<< row[k * 16 + 6]->asFloat()
+				<< "\n\tDoubleField = "		<< row[k * 16 + 7]->asDouble()
+				<< "\n\tCharField = '"		<< row[k * 16 + 8]->asChar()
+	 			<< "'\n\tBoolField = "		<< row[k * 16 + 9]->asBool()
+				<< "\n\tStringField = '"	<< row[k * 16 + 10]->asString()
+				<< "'\n\tBlobField = "		<< row[k * 16 + 11]->asBlob()
+				<< "\tDateField = "		<< row[k * 16 + 12]->asDate()
+				<< "\n\tTimeField = "		<< row[k * 16 + 13]->asTime()
+				<< "\n\tDateTimeField = "	<< row[k * 16 + 14]->asDateTime()
+				<< "\n\tNumericField = "	<< row[k * 16 + 15]->asNumeric() << std::endl;
 		}
+
 
 		PRINT_INFO_BEGIN("Drop table")
 		connection->dropObject(table1.get());

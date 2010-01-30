@@ -155,7 +155,7 @@ std::ostream & DB_Oracle::StringField::put(std::ostream & os) const {
 	if(isNull()) 
 		os << "NULL";
 	else
-		os << _data.c_str();
+		os << _data;
 	return os;
 }
 
