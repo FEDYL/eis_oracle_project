@@ -5,11 +5,8 @@
 #include <iostream>
 #include <sstream>
 
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-=======
 #include "occi.h"
 
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 #include "libdb/common/field.hpp"
 
 namespace DB_Oracle {
@@ -27,22 +24,14 @@ struct ORACLE_FIELD {
 	static const unsigned int FIELD_TYPE_TIMESTAMP = 0xBB;
 	static const unsigned int FIELD_TYPE_STRING = 0x1;
 	static const unsigned int FIELD_TYPE_BLOB = 0x71;
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	
-=======
 
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 	std::string name;		//!< - имя поля.
 	std::string table;	  	//!< - имя таблицы, из которой было выбрано это поле.
 	std::string def;		//!< - значение поля по умолчанию.
 	unsigned int length;		//!< - размер поля.
 	unsigned int precision;		//!< - разрядность. Только для типа FIELD_TYPE_NUMBER.
 	unsigned int scale;		//!< - знаки после запятой. Только для типа FIELD_TYPE_NUMBER.
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	unsigned int type;
-=======
 	unsigned int type;		//!< - тип поля.
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 };
 
 //! Поле базы данных.
@@ -63,11 +52,7 @@ public:
 	Field(const Field &src) : DB::Field(src), _name(src._name), _table(src._table) { }
 
 	//! Деструктор.
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	virtual ~Field() { }
-=======
 	virtual ~Field() { std::cout << "~Field();\n"; }
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 
 	//! Оператор присваивания.
 	Field& operator=(const Field &src) {
@@ -80,13 +65,9 @@ public:
 	/*!
 	  Пустая она, так как объекты DB_Oracle::Field не создаются из const char *
 	 */
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	void setData(size_t, const char *) { }
-=======
 	void setData(size_t, const char *) { 
 		throw DB::XDBError("This operation is not supported: Field::setData()");
 	}
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 	//! Пустая реализация метода DB::Field::c_str()
 	/*!
 	  Пустая она, так как объекты DB_Oracle::Field не создаются из const char *
@@ -117,16 +98,10 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), _prec(field.precision), _scale(field.scale) {
-		init();
-	}
-=======
 	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), 
 								_numeric_data(field.precision - field.scale, field.scale, (double)data) { }
 	
 	~NumberField() { std::cout << "~NumberField();" << std::endl; }
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 
 	//! Реализация методов DB::Field.
 	int asLong() const;
@@ -166,29 +141,10 @@ public:
 	
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	
-	//! Метод заполняющий поле данными.
-	void setData(oracle::occi::Number data) {
-		_data = data;
-		init();
-	}
-
-private:
-	//! Инициализирует значение поля.
-	void init() {
-		//setNull(false);
-	}
-
-	oracle::occi::Number _data;	//!< - данные.
-	unsigned int _prec; 		//!< - разрядность.
-	unsigned int _scale; 		//!< - знаков после запятой.
-=======
 
 private:
 	oracle::occi::Number _data;	//!< - данные.
 	Numeric	_numeric_data;		//!< - данные в другом формате.
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 };
 
 
@@ -205,19 +161,12 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	StringField(const ORACLE_FIELD &field, std::string data) : Field(field), _data(data) {
-		init();
-	}
-
-=======
 	StringField(const ORACLE_FIELD &field, std::string data) : Field(field) {
 		_data.assign(data);
 	}
 
 	~StringField() { std::cout << "~StringField();" << std::endl; }
 
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 	//! Реализация методов DB::Field.
 	const std::string & asString() const;
 	char asChar() const;
@@ -241,27 +190,12 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	//! Метод заполняющий поле данными.
-	void setData(std::string data) {
-		_data = data;
-		init();
-	}
-	
-private:
-	//! Проверяет значение поля _data.
-	void init() {
-	//	setNull(false);
-	}
-
-=======
 	//! Реализация метода DB::Field::c_str().
 	const char * c_str() const { 
 		return _data.c_str(); 
 	}
 
 private:
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 	std::string _data;	//!< - данные.
 };
 
@@ -280,11 +214,7 @@ public:
 	  Конструирует объект на основе данных своих аргументов.
 	 */
 	TimestampField(const ORACLE_FIELD &field, oracle::occi::Timestamp data) : Field(field), _data(data) {
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-		init();
-=======
 		convertType();
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 	}
 
 	//! Реализация методов DB::Field.
@@ -311,20 +241,6 @@ public:
 
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	
-	//! Метод заполняющий поле данными.
-	void setData(oracle::occi::Timestamp data) {
-		_data = data;
-		init();
-	}
-
-private:
-	//! Проверяет значение поля _data и переводит его в другие форматы.
-	void init() {
-		// _data -> _eis_*_data;
-		//setNull(false);
-=======
 
 	
 
@@ -345,7 +261,6 @@ private:
 
 		_eis_datetime_data.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
 		_eis_datetime_data.set_year_month_day(year, month, day);
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 	}
 	
 	oracle::occi::Timestamp _data;		//!< - собственно данные.
@@ -369,11 +284,7 @@ public:
 	  Конструирует объект на основе данных своих аргументов.
 	 */
 	BlobField(const ORACLE_FIELD &field, oracle::occi::Blob data) : Field(field), _data(data) {
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-		init();
-=======
 		convertType();
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 	}
 
 	//! Реализация методов DB::Field.
@@ -397,19 +308,6 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
-<<<<<<< HEAD:src/libdb/oracle/field.hpp
-	//! Метод заполняющий поле данными.
-	void setData(oracle::occi::Blob data) {
-		_data = data;
-		init();
-	}
-
-private:
-	//! Проверяет значение поля _data и переводит его в другой формат.
-	void init() {
-		// _data -> _db_data;
-		//setNull(false)
-=======
 private:
 	//! Проверяет значение поля _data и переводит его в формат DB::Blob.
 	void convertType() {
@@ -420,7 +318,6 @@ private:
 		instream->readBuffer(buffer, size);
 		_db_data.setData(size, buffer);
 		_data.closeStream (instream);
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/field.hpp
 	}
 	oracle::occi::Blob _data;	//!< - данные полученые из оракла.
 	DB::Blob _db_data;		//!< - данные для работы.

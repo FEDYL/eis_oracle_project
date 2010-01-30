@@ -13,13 +13,8 @@
 
 //! Данные для подключения к бд.
 #define HOST ""
-<<<<<<< HEAD:tests/libdb/Tests.h
-#define USER "system"
-#define PASS "12345"
-=======
 #define USER "olezhka"
 #define PASS "qaz"
->>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:tests/libdb/Tests.h
 
 //! Макросы вывода информации о процессе выполнения тестов.
 /*! Для наглядности по большей части. */
