@@ -105,35 +105,33 @@ void testDataBase(bool isDropOldDB) {
 		PRINT_INFO_END
 
 		PRINT_INFO("Result of select:")		
-		DB::ResultSet::iterator i = rs->begin();
-		if(i != rs->end()) {
-			DB::ResultRow &row = *i;
-			unsigned int _size = rs->size();
-			for(unsigned int j = 0; j < _size; ++j) {
-				std::cout << "row #" << j + 1 << ":" << std::endl;
+		int k = 0;
+		for(DB::ResultSet::iterator i = rs->begin(); i != rs->end(); ++i) {
+			std::cout << "row #" << k+1 << ":" << std::endl;
+			DB::ResultRow &row = *i;	
 				std::cout 
-				<< "LongField = "	  << row[j * 15]->asLong() 
-				<< ", ULongField = "	  << row[j * 15 + 1]->asULong() 
-				<< ", ShortField = "	  << row[j * 15 + 2]->asShort() 
-				<< ", UShortField = "	  << row[j * 15 + 3]->asUShort() 			
-				<< ", LongLongField = "	  << row[j * 15 + 4]->asLongLong() 
-				<< ", ULongLongField = "  << row[j * 15 + 5]->asULongLong() 
-				<< ", FloatField = "	  << row[j * 15 + 6]->asFloat() 
-				<< ", DoubleField = "	  << row[j * 15 + 7]->asDouble() 
-				<< ", CharField = '"	  << row[j * 15 + 8]->asChar()
-	 			<< "', BoolField = "	  << row[j * 15 + 9]->asBool() 
-				<< ", StringField = '"    << row[j * 15 + 10]->asString()
-				<< "', BlobField = '"	  << row[j * 15 + 11]->asBlob()
-				<< "', DateField = "	  << row[j * 15 + 12]->asDate() 
-				<< ", TimeField = "	  << row[j * 15 + 13]->asTime() 
-				<< ", DateTimeField = "	  << row[j * 15 + 14]->asDateTime() << std::endl;
-			}
+				<< "LongField = "	  << row[k * 15]->asLong() 
+				<< ", ULongField = "	  << row[k * 15 + 1]->asULong() 
+				<< ", ShortField = "	  << row[k * 15 + 2]->asShort() 
+				<< ", UShortField = "	  << row[k * 15 + 3]->asUShort() 	
+				<< ", LongLongField = "	  << row[k * 15 + 4]->asLongLong() 
+				<< ", ULongLongField = "  << row[k * 15 + 5]->asULongLong() 
+				<< ", FloatField = "	  << row[k * 15 + 6]->asFloat() 
+				<< ", DoubleField = "	  << row[k * 15 + 7]->asDouble() 
+				<< ", CharField = '"	  << row[k * 15 + 8]->asChar()
+	 			<< "', BoolField = "	  << row[k * 15 + 9]->asBool() 
+				<< ", StringField = '"    << row[k * 15 + 10]->asString()
+				<< "', BlobField = '"	  << row[k * 15 + 11]->asBlob()
+				<< "', DateField = "	  << row[k * 15 + 12]->asDate() 
+				<< ", TimeField = "	  << row[k * 15 + 13]->asTime() 
+				<< ", DateTimeField = "	  << row[k * 15 + 14]->asDateTime() << std::endl;
+			k++;
 		}
 		PRINT_INFO_BEGIN("Drop table")
 		connection->dropObject(table1.get());
 		PRINT_INFO_END
 		PRINT_INFO("\n")
-		PRINT_INFO("\n")
+
 	} catch( const DB::XDBError &err ) {
 		return;
 	}
