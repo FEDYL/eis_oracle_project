@@ -199,7 +199,7 @@ public:
 	  Конструирует объект на основе данных своих аргументов.
 	 */
 	TimestampField(const ORACLE_FIELD &field, oracle::occi::Timestamp data) : Field(field), _data(data) {
-		init();
+		convertType();
 	}
 
 	//! Реализация методов DB::Field.
@@ -226,18 +226,20 @@ public:
 
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
-	
-	//! Метод заполняющий поле данными.
-	void setData(oracle::occi::Timestamp data) {
-		_data = data;
-		init();
-	}
 
 private:
-	//! Проверяет значение поля _data и переводит его в другие форматы.
-	void init() {
-		// _data -> _eis_*_data;
-		//setNull(false);
+	//! Проверяет значение поля _data и переводит его в форматы eis_date::datetime, eis_date::time и eis_date::date.
+	void convertType() {
+		unsigned int hour, minute, sec, sc;	// параметры времени.
+		int year;				// параметр даты.
+		unsigned int month, day;		// параметры даты.
+		_data.getTime(hour, minute, sec, sc);
+		_data.getDate(year, month, day);
+
+		_eis_time_data.set_hour_min_sec(hour, minute, sec);
+		_eis_date_data.set_year_month_day(year, month, day);
+		_eis_datetime_data.set_hour_min_sec(hour, minute, sec);
+		_eis_datetime_data.set_year_month_day(year, month, day);
 	}
 	
 	oracle::occi::Timestamp _data;		//!< - собственно данные.
