@@ -94,9 +94,7 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), _prec(field.precision), _scale(field.scale) {
-		init();
-	}
+	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), _prec(field.precision), _scale(field.scale) { }
 
 	//! Реализация методов DB::Field.
 	int asLong() const;
@@ -136,19 +134,8 @@ public:
 	
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
-	
-	//! Метод заполняющий поле данными.
-	void setData(oracle::occi::Number data) {
-		_data = data;
-		init();
-	}
 
 private:
-	//! Инициализирует значение поля.
-	void init() {
-		//setNull(false);
-	}
-
 	oracle::occi::Number _data;	//!< - данные.
 	unsigned int _prec; 		//!< - разрядность.
 	unsigned int _scale; 		//!< - знаков после запятой.
@@ -168,9 +155,7 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	StringField(const ORACLE_FIELD &field, std::string data) : Field(field), _data(data) {
-		init();
-	}
+	StringField(const ORACLE_FIELD &field, std::string data) : Field(field), _data(data) {	}
 
 	//! Реализация методов DB::Field.
 	const std::string & asString() const;
@@ -195,18 +180,7 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
-	//! Метод заполняющий поле данными.
-	void setData(std::string data) {
-		_data = data;
-		init();
-	}
-	
 private:
-	//! Проверяет значение поля _data.
-	void init() {
-	//	setNull(false);
-	}
-
 	std::string _data;	//!< - данные.
 };
 
@@ -225,7 +199,7 @@ public:
 	  Конструирует объект на основе данных своих аргументов.
 	 */
 	TimestampField(const ORACLE_FIELD &field, oracle::occi::Timestamp data) : Field(field), _data(data) {
-		init();
+		convertType();
 	}
 
 	//! Реализация методов DB::Field.
@@ -252,18 +226,20 @@ public:
 
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
-	
-	//! Метод заполняющий поле данными.
-	void setData(oracle::occi::Timestamp data) {
-		_data = data;
-		init();
-	}
 
 private:
-	//! Проверяет значение поля _data и переводит его в другие форматы.
-	void init() {
-		// _data -> _eis_*_data;
-		//setNull(false);
+	//! Проверяет значение поля _data и переводит его в форматы eis_date::datetime, eis_date::time и eis_date::date.
+	void convertType() {
+		unsigned int hour, minute, sec, sc;	// параметры времени.
+		int year;				// параметр даты.
+		unsigned int month, day;		// параметры даты.
+		_data.getTime(hour, minute, sec, sc);
+		_data.getDate(year, month, day);
+
+		_eis_time_data.set_hour_min_sec(hour, minute, sec);
+		_eis_date_data.set_year_month_day(year, month, day);
+		_eis_datetime_data.set_hour_min_sec(hour, minute, sec);
+		_eis_datetime_data.set_year_month_day(year, month, day);
 	}
 	
 	oracle::occi::Timestamp _data;		//!< - собственно данные.
@@ -287,7 +263,7 @@ public:
 	  Конструирует объект на основе данных своих аргументов.
 	 */
 	BlobField(const ORACLE_FIELD &field, oracle::occi::Blob data) : Field(field), _data(data) {
-		init();
+		convertType();
 	}
 
 	//! Реализация методов DB::Field.
@@ -311,17 +287,17 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
-	//! Метод заполняющий поле данными.
-	void setData(oracle::occi::Blob data) {
-		_data = data;
-		init();
-	}
-
 private:
-	//! Проверяет значение поля _data и переводит его в другой формат.
-	void init() {
-		// _data -> _db_data;
-		//setNull(false)
+	//! Проверяет значение поля _data и переводит его в формат DB::Blob.
+	void convertType() {
+		int size = _data.length();
+		oracle::occi::Stream * instream = _data.getStream(1, 0);
+		char * buffer = new char[size];
+		memset(buffer, NULL, size);
+		instream->readBuffer(buffer, size);
+		_db_data.setData(size, buffer);
+		_data.closeStream (instream);
+		_data.close();
 	}
 	oracle::occi::Blob _data;	//!< - данные полученые из оракла.
 	DB::Blob _db_data;		//!< - данные для работы.
