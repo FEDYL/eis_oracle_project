@@ -66,7 +66,7 @@ protected:
 	virtual void getData(difference_type pos, DB::ResultRow & row);
 	//! Реализация метода DB::ResultSet::eof().
 	virtual bool eof(difference_type pos) const {
-		return (pos >= size());
+		return ((size_type)pos >= size());
 	}
 };
 

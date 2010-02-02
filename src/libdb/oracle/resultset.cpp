@@ -57,7 +57,7 @@ void DB_Oracle::ResultSet::next(difference_type pos) {
 }
 
 void DB_Oracle::ResultSet::getData(difference_type pos, DB::ResultRow & atrow) {
-	if(pos > size())
+	if((size_type)pos > size())
 		throw(DB::XDBError("Requisting position is invalid"));
 	if(eof(pos))
 		return;

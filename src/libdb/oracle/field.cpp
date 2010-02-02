@@ -131,7 +131,7 @@ const std::string & DB_Oracle::StringField::asString() const {
 		DB::XDBError err;
 		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
 		throw err;
-	} else
+	} else 
 		return _data;
 }
 

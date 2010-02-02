@@ -51,9 +51,6 @@ public:
 	//! Конструктор копирования.
 	Field(const Field &src) : DB::Field(src), _name(src._name), _table(src._table) { }
 
-	//! Деструктор.
-	virtual ~Field() { std::cout << "~Field();\n"; }
-
 	//! Оператор присваивания.
 	Field& operator=(const Field &src) {
 		_name = src._name;
@@ -72,7 +69,10 @@ public:
 	/*!
 	  Пустая она, так как объекты DB_Oracle::Field не создаются из const char *
 	 */
-	const char * c_str() const { return NULL; }
+	const char * c_str() const { 
+		throw DB::XDBError("This operation is not supported: Field::c_str()"); 
+		return NULL; 
+	}
 
 	//! Акцептор к наименованию поля.
 	const std::string&   name() const  { return _name; }
@@ -88,7 +88,7 @@ private:
 
 //! Реализация поля базы данных для оракловского типа Number.
 /*!
-  Этот оракловский тип включает в себя все целые поля, тип bool и тип numeric. 
+  Этот оракловский тип включает в себя все целые поля, float, double, тип bool и тип numeric. 
  */
 class NumberField : public Field {
 public:
@@ -100,8 +100,9 @@ public:
 	 */
 	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), 
 								_numeric_data(field.precision - field.scale, field.scale, (double)data) { }
-	
-	~NumberField() { std::cout << "~NumberField();" << std::endl; }
+
+	//! Конструктор копирования.
+	NumberField(const NumberField &src) : Field(src), _data(src._data), _numeric_data(src._numeric_data) { }
 
 	//! Реализация методов DB::Field.
 	int asLong() const;
@@ -165,7 +166,8 @@ public:
 		_data.assign(data);
 	}
 
-	~StringField() { std::cout << "~StringField();" << std::endl; }
+	//! Конструктор копирования.
+	StringField(const StringField &src) : Field(src) { _data.assign(src._data); }
 
 	//! Реализация методов DB::Field.
 	const std::string & asString() const;
@@ -178,7 +180,9 @@ public:
 	/*!
 	  Создает подобного себе.
 	 */
-	virtual	DB::Field * _clone() const { return new StringField(*this); }
+	virtual	DB::Field * _clone() const { 
+		return new StringField(*this); 
+	}
 
 	//! Присвоить данные аргументу типа CORBA::Any.
 	/*!
@@ -189,11 +193,6 @@ public:
 
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
-
-	//! Реализация метода DB::Field::c_str().
-	const char * c_str() const { 
-		return _data.c_str(); 
-	}
 
 private:
 	std::string _data;	//!< - данные.
@@ -217,6 +216,10 @@ public:
 		convertType();
 	}
 
+	//! Конструктор копирования.
+	TimestampField(const TimestampField &src) : Field(src), _data(src._data), _eis_time_data(src._eis_time_data),
+								_eis_date_data(src._eis_date_data), _eis_datetime_data(src._eis_datetime_data) { }
+	
 	//! Реализация методов DB::Field.
 	const eis_date::datetime & asDateTime() const;
 	const eis_date::time & asTime() const;	
@@ -241,8 +244,6 @@ public:
 
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
-
-	
 
 private:
 	//! Проверяет значение поля _data и переводит его в форматы eis_date::datetime, eis_date::time и eis_date::date.
@@ -271,7 +272,7 @@ private:
 
 
 
-//! Роле типа Blob.
+//! Поле типа Blob.
 /*!
   Поле, которое содержит бинарные данные.
  */
@@ -286,7 +287,10 @@ public:
 	BlobField(const ORACLE_FIELD &field, oracle::occi::Blob data) : Field(field), _data(data) {
 		convertType();
 	}
-
+	
+	//! Конструктор копирования.
+	BlobField(const BlobField &src) : Field(src), _data(src._data), _db_data(src._db_data) { }
+	
 	//! Реализация методов DB::Field.
 	const DB::Blob & asBlob() const;
 
