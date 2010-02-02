@@ -46,7 +46,10 @@ DB::InternalConnection() {
 }
 
 DB_Oracle::InternalConnection::~InternalConnection() {
+<<<<<<< HEAD:src/libdb/oracle/connection.cpp
 	std::cout << "~InternalConnection();\n";
+=======
+>>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/connection.cpp
 	OracleConnection::terminateConnection(m_orclConn);
 }
 

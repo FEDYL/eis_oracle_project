@@ -61,11 +61,21 @@ void DB_Oracle::ResultSet::getData(difference_type pos, DB::ResultRow & atrow) {
 		throw(DB::XDBError("Requisting position is invalid"));
 	if(eof(pos))
 		return;
+<<<<<<< HEAD:src/libdb/oracle/resultset.cpp
 	if(pos==0)
 		next(pos);
 	DB::Field * field;
 	if(atrow.size() == 0)
 		fetchFields();
+=======
+	if(pos == 0)
+		next(pos);
+
+	if(atrow.size() == 0)	
+		fetchFields();
+
+	DB::Field * field;
+>>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/resultset.cpp
 	for(unsigned int i = 0; i < m_numCols; ++i) {
 		switch(m_fields[i].type) {
 		case ORACLE_FIELD::FIELD_TYPE_NUMBER:

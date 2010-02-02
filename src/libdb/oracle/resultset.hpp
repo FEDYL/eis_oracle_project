@@ -33,7 +33,10 @@ public:
 	}
 	//! Деструктор.
 	virtual ~ResultSet() {
+<<<<<<< HEAD:src/libdb/oracle/resultset.hpp
 		std::cout << "virtual ~ResultSet();\n";
+=======
+>>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/resultset.hpp
 		m_stmt->closeResultSet(m_resultSet);
 		m_connection->terminateStatement(m_stmt);
 	}
@@ -60,14 +63,23 @@ private:
 
 	OracleFields m_fields;				//!< - информация о полях результата.
 
+<<<<<<< HEAD:src/libdb/oracle/resultset.hpp
 
+=======
+>>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/resultset.hpp
 protected:
 	//! Реализация метода DB::ResultSet::next().
 	virtual void next(difference_type pos);
 	//! Реализация метода DB::ResultSet::getData().
 	virtual void getData(difference_type pos, DB::ResultRow & row);
 	//! Реализация метода DB::ResultSet::eof().
+<<<<<<< HEAD:src/libdb/oracle/resultset.hpp
 	virtual bool eof(difference_type pos) const {return (pos==m_numRows);}
+=======
+	virtual bool eof(difference_type pos) const {
+		return (pos >= size());
+	}
+>>>>>>> 5b7fe30298b5b7766e0a97101fdfcee844df2e3e:src/libdb/oracle/resultset.hpp
 };
 
 } // namespace DB_Oracle
