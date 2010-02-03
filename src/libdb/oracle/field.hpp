@@ -63,14 +63,14 @@ public:
 	  Пустая она, так как объекты DB_Oracle::Field не создаются из const char *
 	 */
 	void setData(size_t, const char *) { 
-		throw DB::XDBError("This operation is not supported: Field::setData()");
+		throw DB::XDBError("Operation is not supported: Field::setData()");
 	}
 	//! Пустая реализация метода DB::Field::c_str()
 	/*!
 	  Пустая она, так как объекты DB_Oracle::Field не создаются из const char *
 	 */
 	const char * c_str() const { 
-		throw DB::XDBError("This operation is not supported: Field::c_str()"); 
+		throw DB::XDBError("Operation is not supported: Field::c_str()"); 
 		return NULL; 
 	}
 
@@ -104,6 +104,9 @@ public:
 	//! Конструктор копирования.
 	NumberField(const NumberField &src) : Field(src), _data(src._data), _numeric_data(src._numeric_data) { }
 
+	//! Деструктор.
+	~NumberField() { }
+
 	//! Реализация методов DB::Field.
 	int asLong() const;
 	unsigned int asULong() const;
@@ -131,7 +134,9 @@ public:
 	/*!
 	  Создает подобного себе.
 	 */
-	virtual	DB::Field * _clone() const { return new NumberField(*this); }
+	virtual	DB::Field * _clone() const { 
+		return new NumberField(*this);
+	}
 
 	//! Присвоить данные аргументу типа CORBA::Any.
 	/*!
@@ -168,6 +173,9 @@ public:
 
 	//! Конструктор копирования.
 	StringField(const StringField &src) : Field(src) { _data.assign(src._data); }
+
+	//! Деструктор.
+	~StringField() { }
 
 	//! Реализация методов DB::Field.
 	const std::string & asString() const;
@@ -212,13 +220,15 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	TimestampField(const ORACLE_FIELD &field, oracle::occi::Timestamp data) : Field(field), _data(data) {
-		convertType();
+	TimestampField(const ORACLE_FIELD &field, const oracle::occi::Timestamp &data) : Field(field) {
+		setData(data);
 	}
 
 	//! Конструктор копирования.
-	TimestampField(const TimestampField &src) : Field(src), _data(src._data), _eis_time_data(src._eis_time_data),
-								_eis_date_data(src._eis_date_data), _eis_datetime_data(src._eis_datetime_data) { }
+	TimestampField(const TimestampField &src) : Field(src), _time(src._time), _date(src._date), _datetime(src._datetime) { }
+
+	//! Деструктор.
+	~TimestampField() { }
 	
 	//! Реализация методов DB::Field.
 	const eis_date::datetime & asDateTime() const;
@@ -233,7 +243,9 @@ public:
 	/*!
 	  Создает подобного себе.
 	 */
-	virtual DB::Field * _clone() const { return new TimestampField(*this); }
+	virtual DB::Field * _clone() const { 
+		return new TimestampField(*this);
+	}
 
 	//! Присвоить данные аргументу типа CORBA::Any.
 	/*!
@@ -246,28 +258,25 @@ public:
 	std::ostream & put(std::ostream &) const;
 
 private:
-	//! Проверяет значение поля _data и переводит его в форматы eis_date::datetime, eis_date::time и eis_date::date.
-	void convertType() {
+	//! Заполняет поля данными из переменной data.
+	void setData(const oracle::occi::Timestamp &data) {
 		unsigned int hour, minute, sec, sc;	// параметры времени.
 		int zone_hour, zone_minute;		// параметры часового пояса.
 		int year; unsigned int month, day;	// параметры даты.
 
-		_data.getTime(hour, minute, sec, sc);
-		_data.getTimeZoneOffset(zone_hour, zone_minute);
-		_data.getDate(year, month, day);
+		data.getTime(hour, minute, sec, sc);
+		data.getTimeZoneOffset(zone_hour, zone_minute);
+		data.getDate(year, month, day);
 
-		_eis_time_data.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
-
-		_eis_date_data.set_year_month_day(year, month, day);
-
-		_eis_datetime_data.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
-		_eis_datetime_data.set_year_month_day(year, month, day);
+		_time.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
+		_date.set_year_month_day(year, month, day);
+		_datetime.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
+		_datetime.set_year_month_day(year, month, day);
 	}
 	
-	oracle::occi::Timestamp _data;		//!< - собственно данные.
-	eis_date::datetime _eis_datetime_data;	//!< - данные в формате eis_date::datetime.
-	eis_date::time _eis_time_data;		//!< - данные в формате eis_date::time.
-	eis_date::date _eis_date_data;		//!< - данные в формате eis_date::date.
+	eis_date::datetime	_datetime;	//!< - данные в формате eis_date::datetime.
+	eis_date::time		_time;		//!< - данные в формате eis_date::time.
+	eis_date::date		_date;		//!< - данные в формате eis_date::date.
 };
 
 
@@ -284,12 +293,13 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	BlobField(const ORACLE_FIELD &field, oracle::occi::Blob data) : Field(field), _data(data) {
-		convertType();
-	}
+	BlobField(const ORACLE_FIELD &field, oracle::occi::Blob data) : Field(field), _data(cast(data)) { }
 	
 	//! Конструктор копирования.
-	BlobField(const BlobField &src) : Field(src), _data(src._data), _db_data(src._db_data) { }
+	BlobField(const BlobField &src) : Field(src), _data(src._data) { }
+
+	//! Деструктор.
+	~BlobField() { }
 	
 	//! Реализация методов DB::Field.
 	const DB::Blob & asBlob() const;
@@ -300,7 +310,9 @@ public:
 	/*!
 	  Создает подобного себе.
 	 */
-	virtual	DB::Field * _clone() const { return new BlobField(*this); }
+	virtual	DB::Field * _clone() const { 
+		return new BlobField(*this);
+	}
 
 	//! Присвоить данные аргументу типа CORBA::Any.
 	/*!
@@ -313,18 +325,10 @@ public:
 	std::ostream & put(std::ostream &) const;
 
 private:
-	//! Проверяет значение поля _data и переводит его в формат DB::Blob.
-	void convertType() {
-		int size = _data.length();
-		oracle::occi::Stream * instream = _data.getStream(1, 0);
-		char * buffer = new char[size];
-		memset(buffer, NULL, size);
-		instream->readBuffer(buffer, size);
-		_db_data.setData(size, buffer);
-		_data.closeStream (instream);
-	}
-	oracle::occi::Blob _data;	//!< - данные полученые из оракла.
-	DB::Blob _db_data;		//!< - данные для работы.
+	//! Осуществляет приведение типа oracle::occi::Blob к типу DB::Blob.
+	DB::Blob cast(oracle::occi::Blob data) const;
+
+	DB::Blob _data; //!< - данные.
 };
 
 } // namespace DB_Oracle

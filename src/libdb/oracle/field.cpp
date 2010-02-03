@@ -165,13 +165,14 @@ std::ostream & DB_Oracle::StringField::put(std::ostream & os) const {
 // class : TimestampField
 //------------------------------------------------------------------------------------------------------
 
+
 const eis_date::datetime & DB_Oracle::TimestampField::asDateTime() const {
 	if(isNull()) {
 		DB::XDBError err;
 		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
 		throw err;
 	} else
-		return _eis_datetime_data;
+		return _datetime;
 }
 
 const eis_date::time & DB_Oracle::TimestampField::asTime() const {
@@ -180,7 +181,7 @@ const eis_date::time & DB_Oracle::TimestampField::asTime() const {
 		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
 		throw err;
 	} else
-		return _eis_time_data;
+		return _time;
 }
 
 const eis_date::date & DB_Oracle::TimestampField::asDate() const {
@@ -189,21 +190,21 @@ const eis_date::date & DB_Oracle::TimestampField::asDate() const {
 		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
 		throw err;
 	} else
-		return _eis_date_data;
+		return _date;
 }
 
 void DB_Oracle::TimestampField::assignAny(CORBA::Any &value) const {
 	if(isNull())
 		value.iluDeleteContent();
 	else
-		value <<= (CommonData::DateTime)_eis_datetime_data;
+		value <<= (CommonData::DateTime)_datetime;
 }
 
 std::ostream & DB_Oracle::TimestampField::put(std::ostream & os) const {
 	if(isNull()) 
 		os << "NULL";
 	else
-		os << _eis_datetime_data.format(eis_date::SQL, false);
+		os << _datetime.format(eis_date::SQL, false);
 	return os;
 }
 
@@ -219,7 +220,7 @@ const DB::Blob & DB_Oracle::BlobField::asBlob() const {
 		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
 		throw err;
 	} else
-		return _db_data;
+		return _data;
 }
 
 void DB_Oracle::BlobField::assignAny(CORBA::Any &value) const {
@@ -229,9 +230,9 @@ void DB_Oracle::BlobField::assignAny(CORBA::Any &value) const {
 		ilu_Pickle *k = value.iluPickleValue();
 		if (k->pi_len) 
 			ilu_free(k->pi_bytes);
-		k->pi_len = _db_data.length;
+		k->pi_len = _data.length;
 		k->pi_bytes = (ilu_bytes)ilu_malloc(k->pi_len);
-		memcpy(k->pi_bytes, _db_data.data, k->pi_len);
+		memcpy(k->pi_bytes, _data.data, k->pi_len);
 		value.iluGetFromPickle();	
 	}
 }
@@ -240,6 +241,24 @@ std::ostream & DB_Oracle::BlobField::put(std::ostream & os) const {
 	if(isNull()) 
 		os << "NULL";
 	else
-		os << _db_data;
+		os << _data;
 	return os;
+}
+
+DB::Blob DB_Oracle::BlobField::cast(oracle::occi::Blob data) const {
+	DB::Blob res;
+	int size = data.length();
+	oracle::occi::Stream * instream = data.getStream(1, 0);
+	char * buffer = new char[size];
+	memset(buffer, NULL, size);
+	instream->readBuffer(buffer, size);
+	try {
+		base64::Decoder dec((const base64::byte *)buffer, size);
+		res.setData(dec.getlength(), (const char *)dec.getbuffer());
+	} catch (const base64::XDecodeFail &x) {
+		res.setData(0, NULL);
+	}
+	data.closeStream(instream);
+	delete[] buffer;
+	return res;
 }

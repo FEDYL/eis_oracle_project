@@ -101,7 +101,7 @@ void testDataBase() {
 		PRINT_INFO_END
 
 		PRINT_INFO_BEGIN("Create insert 1st row query")
-		query = createInsertQuery(1, 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, "'e'", true, "'One'", "'12'", "to_date('2009-10-20','yyyy-mm-dd')", 
+		query = createInsertQuery(1, 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, "'e'", true, "'One'", "'0'", "to_date('2009-10-20','yyyy-mm-dd')", 
 							"to_timestamp('8:23:14', 'hh:mi:ss')", "to_timestamp('1990-01-01 11:22:33', 'yyyy-mm-dd hh:mi:ss')", 123.12);
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
@@ -110,7 +110,7 @@ void testDataBase() {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 2nd row query")
-		query = createInsertQuery(2, 0, -2, 123, 9887, 999826, -1.4, 3431.00043, "'0'", false, "'Two'", "'7f'", "to_date('1990-01-01','yyyy-mm-dd')", 
+		query = createInsertQuery(2, 0, -2, 123, 9887, 999826, -1.4, 3431.00043, "'0'", false, "'Two'", "'0'", "to_date('1990-01-01','yyyy-mm-dd')", 
 							"to_timestamp('9:00', 'hh:mi')", "to_timestamp('1990-01-01 08:00', 'yyyy-mm-dd hh:mi')", 66.4);
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
@@ -119,7 +119,7 @@ void testDataBase() {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 3rd row query")
-		query = createInsertQuery(3, 12, 176, 22, 123, 1628392, 89, -345.0063, "'>'", true, "'three'", "'a'", "to_date('1997-12-31','yyyy-mm-dd')",
+		query = createInsertQuery(3, 12, 176, 22, 123, 1628392, 89, -345.0063, "'>'", true, "'three'", "'0'", "to_date('1997-12-31','yyyy-mm-dd')",
 							"to_timestamp('3:00:01', 'hh:mi:ss')", "to_timestamp('1990-1-01 10:00:01', 'yyyy-mm-dd hh:mi:ss')", 0);
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
@@ -156,8 +156,8 @@ void testDataBase() {
 				<< "\n\tBoolField = '"		<< row[k * 16 + 8]->asBool() // <- char
 	 			<< "'\n\tBoolField = "		<< row[k * 16 + 9]->asBool()
 				<< "\n\tBoolField = '"		<< row[k * 16 + 10]->asBool() // <- string
-				<< "'\n\tBlobField = "		<< row[k * 16 + 11]->asBlob()
-				<< "\tDateField = "		<< row[k * 16 + 12]->asDate()
+				<< "'\n\tBlobField = '"		<< row[k * 16 + 11]->asBlob()
+				<< "'\n\tDateField = "		<< row[k * 16 + 12]->asDate()
 				<< "\n\tTimeField = "		<< row[k * 16 + 13]->asTime()
 				<< "\n\tDateTimeField = "	<< row[k * 16 + 14]->asDateTime()
 				<< "\n\tNumericField = "	<< row[k * 16 + 15]->asNumeric() << std::endl;
