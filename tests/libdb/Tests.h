@@ -22,8 +22,8 @@
 #define PRINT_INFO_END      { std::cout << "yes" << std::endl; }
 #define PRINT_INFO(x)       { std::cout << x << std::endl; }
 
-void testDataBase(bool isDropOldDB = false);
-void testForeignKey(bool isDropOldDB = false);
-void testOCCI(bool isDropOldDB = false);
+void testDataBase();
+void testForeignKey();
+void testOCCI();
 
 #endif //__TestsH__

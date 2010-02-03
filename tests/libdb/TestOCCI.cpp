@@ -141,7 +141,7 @@ public:
 	}
 }; //end of class
 
-void testOCCI(bool isDropOldDB) {
+void testOCCI() {
 	clsTestOCCI *o = new clsTestOCCI();
 	o->runSample();
 }

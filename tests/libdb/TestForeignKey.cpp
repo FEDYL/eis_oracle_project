@@ -1,6 +1,7 @@
 #include "Tests.h"
 
-void testForeignKey(bool isDropOldDB) {
+void testForeignKey() {
+	bool isDropOldDB = false;
 	DB_Oracle::Factory::createInstance();
 	PRINT_INFO("\nTEST FOREIGN KEY")
 	try {
@@ -103,7 +104,7 @@ void testForeignKey(bool isDropOldDB) {
 		PRINT_INFO_END
 		PRINT_INFO("\n")
 
-	} catch( const DB::XDBError &err ) {
-		return;
+	} catch(const DB::XDBError &x) {
+		std::cout << "no\nOops! " << x << '\n' << std::endl;
 	}
 }

@@ -26,7 +26,7 @@ boost::xpressive::sregex rex_noconst = boost::xpressive::sregex::compile("^(inse
 // class : Logger
 //------------------------------------------------------------------------------------------------------
 
-static Logger::Logger* logger = NULL;
+static Logger::Logger * logger = NULL;
 
 void DB::setLogger(Logger::Logger* value) {
 	logger = value;
@@ -38,8 +38,7 @@ void DB::setLogger(Logger::Logger* value) {
 // class : InternalConnection
 //------------------------------------------------------------------------------------------------------
 
-DB_Oracle::InternalConnection::InternalConnection(const char * host, const char * user, const char * pass, const char * dbname) :
-DB::InternalConnection() {
+DB_Oracle::InternalConnection::InternalConnection(const char * host, const char * user, const char * pass, const char * dbname) : DB::InternalConnection() {
 	if(strlen(dbname))
 		throw DB::XDBError("Data base name is not null.");
 	m_orclConn = OracleConnection::createConnection(user, pass, host);
@@ -58,7 +57,7 @@ void DB_Oracle::InternalConnection::executeScript(const std::string & script) {
 		MT::SingleLock lock(m_mutex);
 		*logger << LOG_INFO << "Thread " << pthread_self() << ' ' << script;
 	}
-	m_orclConn->executeUpdate(script.c_str());
+	m_orclConn->executeUpdate(script);
 }
 
 DB::Sequence * DB_Oracle::InternalConnection::createSequence(const std::string & name, const unsigned int initial_value) {
@@ -66,19 +65,19 @@ DB::Sequence * DB_Oracle::InternalConnection::createSequence(const std::string &
 }
 
 void DB_Oracle::InternalConnection::getTableStructureFromDB(DB::Table * table) {
-	throw DB::XDBError("This operation is not supported: InternalConnection::getTableStructureFromDB()");
+	throw DB::XDBError("Operation is not supported: InternalConnection::getTableStructureFromDB()");
 }
 
 void DB_Oracle::InternalConnection::createDataBase(const std::string & name) {
-	throw DB::XDBError("This operation is not supported: InternalConnection::createDataBase()");
+	throw DB::XDBError("Operation is not supported: InternalConnection::createDataBase()");
 }
 
 void DB_Oracle::InternalConnection::dropDataBase(const std::string & name) {
-	throw DB::XDBError("This operation is not supported: InternalConnection::dropDataBase()");
+	throw DB::XDBError("Operation is not supported: InternalConnection::dropDataBase()");
 }
 
 void DB_Oracle::InternalConnection::useDataBase(const std::string & name) {
-	throw DB::XDBError("This operation is not supported: InternalConnection::useDataBase()");
+	throw DB::XDBError("Operation is not supported: InternalConnection::useDataBase()");
 }
 
 bool DB_Oracle::InternalConnection::ForeignKey::correspondIndex(Index & index) {
@@ -95,24 +94,11 @@ bool DB_Oracle::InternalConnection::ForeignKey::correspondIndex(Index & index) {
 	return true;
 }
 
-template<typename T> 
-void createFieldDef(DB_Oracle::ORACLE_FIELD * field, DB::Table * table) {
-	T * newfield = new T(field->name);
-	if(field->def)
-		newfield->setDefault(field->def);
-	table->addFieldDef(newfield);
-}
-
-
-
 //------------------------------------------------------------------------------------------------------
 // class : InternalLogConnection
 //------------------------------------------------------------------------------------------------------
 
 DB::ResultSet * DB_Oracle::InternalLogConnection::execSQL(const DB::Query & query) {
-	throw DB::XDBError("This operation is not supported: InternalLogConnection::execSQL()");
-	return NULL;
-
 	bool modificating = true;
 	std::string sql(query.str());
 	MT::SingleLock lock(m_mutex);
