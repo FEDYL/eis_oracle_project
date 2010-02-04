@@ -3,9 +3,12 @@
 #endif
 
 #include "occi.h"
+
 #include <iostream>
 #include <cassert>
+#include <typeinfo>
 #include <vector>
+
 #include "libdb/oracle/resultset.hpp"
 #include "libdb/oracle/field.hpp"
 
@@ -63,28 +66,78 @@ void DB_Oracle::ResultSet::getData(difference_type pos, DB::ResultRow & atrow) {
 		return;
 	if(pos == 0)
 		next(pos);
-
-	if(atrow.size() == 0)	
-		fetchFields();
-
 	DB::Field * field;
-	for(unsigned int i = 0; i < m_numCols; ++i) {
-		switch(m_fields[i].type) {
-		case ORACLE_FIELD::FIELD_TYPE_NUMBER:
-			field = new NumberField(m_fields[i], m_resultSet->getNumber(i + 1));
-			break;
-		case ORACLE_FIELD::FIELD_TYPE_TIMESTAMP:
-			field = new TimestampField(m_fields[i], m_resultSet->getTimestamp(i + 1));
-			break;
-		case ORACLE_FIELD::FIELD_TYPE_STRING:
-			field = new StringField(m_fields[i], m_resultSet->getString(i + 1));
-			break;
-		case ORACLE_FIELD::FIELD_TYPE_BLOB:
-			field = new BlobField(m_fields[i], m_resultSet->getBlob(i + 1));
-			break;
-		default:
-			throw DB::XDBError("Unsupported field type!");
+	bool nulldata;
+	if(atrow.size() == 0) {
+		fetchFields();
+		for(unsigned int i = 0; i < m_numCols; ++i) {
+			nulldata = m_resultSet->isNull(i + 1);
+			switch(m_fields[i].type) {
+			case ORACLE_FIELD::FIELD_TYPE_NUMBER:
+				if(nulldata)
+					field = new NumberField(m_fields[i]);
+				else
+					field = new NumberField(m_fields[i], m_resultSet->getNumber(i + 1));
+				break;
+			case ORACLE_FIELD::FIELD_TYPE_TIMESTAMP:
+				if(nulldata)
+					field = new TimestampField(m_fields[i]);
+				else
+					field = new TimestampField(m_fields[i], m_resultSet->getTimestamp(i + 1));
+				break;
+			case ORACLE_FIELD::FIELD_TYPE_STRING:
+				if(nulldata)
+					field = new StringField(m_fields[i]);
+				else
+					field = new StringField(m_fields[i], m_resultSet->getString(i + 1));
+				break;
+			case ORACLE_FIELD::FIELD_TYPE_BLOB:
+				if(nulldata)
+					field = new BlobField(m_fields[i]);
+				else
+					field = new BlobField(m_fields[i], m_resultSet->getBlob(i + 1));
+				break;
+			default:
+				throw DB::XDBError("Unsupported field type!");
+			}
+			atrow.push(m_fields[i].name, field);
 		}
-		atrow.push(m_fields[i].name, field);
+	} else {
+		for(unsigned int i = 0; i < m_numCols; ++i) {
+			nulldata = m_resultSet->isNull(i + 1);
+			field = atrow.getByIndex_NoConst(i);
+			if(nulldata) {
+				((Field *)field)->setNull();
+				continue;
+			}
+			switch(m_fields[i].type) {
+			case ORACLE_FIELD::FIELD_TYPE_NUMBER:
+				if(typeid(*field) == typeid(NumberField))
+					((NumberField *)field)->setData(m_resultSet->getNumber(i + 1));
+				else
+					throw DB::XDBError("Incorrect result row!");
+				break;
+			case ORACLE_FIELD::FIELD_TYPE_TIMESTAMP:
+				if(typeid(*field) == typeid(TimestampField))
+					((TimestampField *)field)->setData(m_resultSet->getTimestamp(i + 1));
+				else
+					throw DB::XDBError("Incorrect result row!");
+				break;
+			case ORACLE_FIELD::FIELD_TYPE_STRING:
+				if(typeid(*field) == typeid(StringField))
+					((StringField *)field)->setData(m_resultSet->getString(i + 1));
+				else
+					throw DB::XDBError("Incorrect result row!");
+				break;
+			case ORACLE_FIELD::FIELD_TYPE_BLOB:
+				if(typeid(*field) == typeid(BlobField))
+					((BlobField *)field)->setData(m_resultSet->getBlob(i + 1));
+				else
+					throw DB::XDBError("Incorrect result row!");
+				break;
+			default:
+				throw DB::XDBError("Unsupported field type!");
+			}
+		}
 	}
 }

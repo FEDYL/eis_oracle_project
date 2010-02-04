@@ -63,14 +63,14 @@ public:
 	  Пустая она, так как объекты DB_Oracle::Field не создаются из const char *
 	 */
 	void setData(size_t, const char *) { 
-		throw DB::XDBError("Operation is not supported: Field::setData()");
+		throw DB::XDBError("Unsupported operation: Field::setData()");
 	}
 	//! Пустая реализация метода DB::Field::c_str()
 	/*!
 	  Пустая она, так как объекты DB_Oracle::Field не создаются из const char *
 	 */
 	const char * c_str() const { 
-		throw DB::XDBError("Operation is not supported: Field::c_str()"); 
+		throw DB::XDBError("Unsupported operation: Field::c_str()"); 
 		return NULL; 
 	}
 
@@ -78,6 +78,11 @@ public:
 	const std::string&   name() const  { return _name; }
 	//! Акцептор к наименованию таблицы.
 	const std::string&   table() const { return _table; }
+
+	//! Устанавливает флаг _null.
+	void setNull() {
+		isNull(true);
+	}
 
 private:
 	std::string _name;	//!< - наименование поля.
@@ -98,11 +103,20 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	NumberField(const ORACLE_FIELD &field, oracle::occi::Number data) : Field(field), _data(data), 
-								_numeric_data(field.precision - field.scale, field.scale, (double)data) { }
+	NumberField(const ORACLE_FIELD &field, const oracle::occi::Number &data) : Field(field), _prec(field.precision), _scale(field.scale), 
+							_data(data), _numeric_data(field.precision - field.scale, field.scale, asDouble()) { }
+
+	//! Конструктор создающий поле c пустыми данными.
+	/*!
+	  \param field - структура со всеми данными о поле.
+	 */
+	NumberField(const ORACLE_FIELD &field) : Field(field), _prec(field.precision), _scale(field.scale), 
+							_data(0), _numeric_data(field.precision - field.scale, field.scale, 0) {
+		setNull();
+	}
 
 	//! Конструктор копирования.
-	NumberField(const NumberField &src) : Field(src), _data(src._data), _numeric_data(src._numeric_data) { }
+	NumberField(const NumberField &src) : Field(src), _data(src._data), _numeric_data(src._numeric_data), _prec(src._prec), _scale(src._scale) { }
 
 	//! Деструктор.
 	~NumberField() { }
@@ -148,9 +162,17 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
+	//! Устанавливает новые значения поля.
+	/*!
+	 Создан на замену неподдерживаемому DB::Field::setData(size_t, const char *).
+	 */
+	void setData(const oracle::occi::Number &data);
+
 private:
 	oracle::occi::Number _data;	//!< - данные.
 	Numeric	_numeric_data;		//!< - данные в другом формате.
+	unsigned int _prec;		//!< - разрядность.
+	unsigned int _scale;		//!< - знаки после запятой.
 };
 
 
@@ -167,9 +189,18 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	StringField(const ORACLE_FIELD &field, std::string data) : Field(field) {
-		_data.assign(data);
+	StringField(const ORACLE_FIELD &field, const std::string &data) : Field(field) {
+		setData(data);
 	}
+
+	//! Конструктор создающий поле c пустыми данными.
+	/*!
+	  \param field - структура со всеми данными о поле.
+	 */
+	StringField(const ORACLE_FIELD &field) : Field(field) {
+		setNull();
+	}
+
 
 	//! Конструктор копирования.
 	StringField(const StringField &src) : Field(src) { _data.assign(src._data); }
@@ -202,6 +233,15 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
+	//! Устанавливает новое значение поля.
+	/*!
+	 Создан на замену неподдерживаемому DB::Field::setData(size_t, const char *).
+	 */
+	void setData(const std::string &data) {
+		isNull(false);
+		_data.assign(data);
+	}
+
 private:
 	std::string _data;	//!< - данные.
 };
@@ -222,6 +262,14 @@ public:
 	 */
 	TimestampField(const ORACLE_FIELD &field, const oracle::occi::Timestamp &data) : Field(field) {
 		setData(data);
+	}
+
+	//! Конструктор создающий поле c пустыми данными.
+	/*!
+	  \param field - структура со всеми данными о поле.
+	 */
+	TimestampField(const ORACLE_FIELD &field) : Field(field) {
+		setNull();
 	}
 
 	//! Конструктор копирования.
@@ -257,23 +305,13 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
+	//! Устанавливает новые значения поля.
+	/*!
+	 Создан на замену неподдерживаемому DB::Field::setData(size_t, const char *).
+	 */
+	void setData(const oracle::occi::Timestamp &data);
+
 private:
-	//! Заполняет поля данными из переменной data.
-	void setData(const oracle::occi::Timestamp &data) {
-		unsigned int hour, minute, sec, sc;	// параметры времени.
-		int zone_hour, zone_minute;		// параметры часового пояса.
-		int year; unsigned int month, day;	// параметры даты.
-
-		data.getTime(hour, minute, sec, sc);
-		data.getTimeZoneOffset(zone_hour, zone_minute);
-		data.getDate(year, month, day);
-
-		_time.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
-		_date.set_year_month_day(year, month, day);
-		_datetime.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
-		_datetime.set_year_month_day(year, month, day);
-	}
-	
 	eis_date::datetime	_datetime;	//!< - данные в формате eis_date::datetime.
 	eis_date::time		_time;		//!< - данные в формате eis_date::time.
 	eis_date::date		_date;		//!< - данные в формате eis_date::date.
@@ -293,7 +331,17 @@ public:
 	  \param data - данные.
 	  Конструирует объект на основе данных своих аргументов.
 	 */
-	BlobField(const ORACLE_FIELD &field, oracle::occi::Blob data) : Field(field), _data(cast(data)) { }
+	BlobField(const ORACLE_FIELD &field, const oracle::occi::Blob &data) : Field(field) {
+		setData(data);
+	}
+
+	//! Конструктор создающий поле c пустыми данными.
+	/*!
+	  \param field - структура со всеми данными о поле.
+	 */
+	BlobField(const ORACLE_FIELD &field) : Field(field) {
+		setNull();
+	}
 	
 	//! Конструктор копирования.
 	BlobField(const BlobField &src) : Field(src), _data(src._data) { }
@@ -324,10 +372,13 @@ public:
 	//! Реализация метода DB::Field::put().
 	std::ostream & put(std::ostream &) const;
 
-private:
-	//! Осуществляет приведение типа oracle::occi::Blob к типу DB::Blob.
-	DB::Blob cast(oracle::occi::Blob data) const;
+	//! Устанавливает новое значение поля.
+	/*!
+	 Создан на замену неподдерживаемому DB::Field::setData(size_t, const char *).
+	 */
+	void setData(const oracle::occi::Blob &data);
 
+private:
 	DB::Blob _data; //!< - данные.
 };
 

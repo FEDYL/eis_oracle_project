@@ -2,7 +2,7 @@
 #include "libdb/oracle/field.hpp"
 #include <vector>
 #include <iostream>
-
+/*
 std::string createInsertQuery(int _long, unsigned int _ulong, short _short, unsigned short _ushort, long long _longlong, unsigned long long _ulonglong, 
 				float _float, double _double, std::string _char, bool _bool, std::string _str, std::string _blob,
 				std::string _date, std::string _time, std::string _datetime, double _numeric) {
@@ -18,7 +18,7 @@ std::string createInsertQuery(int _long, unsigned int _ulong, short _short, unsi
 	<< _blob << ", " << _date << ", " << _time << ", " << _datetime << ", " << _numeric << ")";
 	return ss.str();
 }
-
+*/
 void testDataBase() {
 	DB_Oracle::Factory::createInstance();
 	DB::Query query;
@@ -101,8 +101,7 @@ void testDataBase() {
 		PRINT_INFO_END
 
 		PRINT_INFO_BEGIN("Create insert 1st row query")
-		query = createInsertQuery(1, 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, "'e'", true, "'One'", "'0'", "to_date('2009-10-20','yyyy-mm-dd')", 
-							"to_timestamp('8:23:14', 'hh:mi:ss')", "to_timestamp('1990-01-01 11:22:33', 'yyyy-mm-dd hh:mi:ss')", 123.12);
+		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField,  StringField, BlobField, DateField, NumericField) VALUES (1, 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, 'e', 1, 'One', '0', to_date('2009-10-20','yyyy-mm-dd'), 123.12)";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -110,8 +109,7 @@ void testDataBase() {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 2nd row query")
-		query = createInsertQuery(2, 0, -2, 123, 9887, 999826, -1.4, 3431.00043, "'0'", false, "'Two'", "'0'", "to_date('1990-01-01','yyyy-mm-dd')", 
-							"to_timestamp('9:00', 'hh:mi')", "to_timestamp('1990-01-01 08:00', 'yyyy-mm-dd hh:mi')", 66.4);
+		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, CharField, BoolField,  StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (2, 0, -2, 123, 9887, 999826, '0', 0, 'Two', '0', to_date('1990-01-01','yyyy-mm-dd'), to_timestamp('9:00', 'hh:mi'), to_timestamp('1990-01-01 08:00', 'yyyy-mm-dd hh:mi'))";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -119,13 +117,21 @@ void testDataBase() {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 3rd row query")
-		query = createInsertQuery(3, 12, 176, 22, 123, 1628392, 89, -345.0063, "'>'", true, "'three'", "'0'", "to_date('1997-12-31','yyyy-mm-dd')",
-							"to_timestamp('3:00:01', 'hh:mi:ss')", "to_timestamp('1990-1-01 10:00:01', 'yyyy-mm-dd hh:mi:ss')", 0);
+		query = "INSERT INTO Table1 (LongField, DateField, TimeField, DateTimeField) VALUES (3, to_date('1997-12-31','yyyy-mm-dd'), to_timestamp('3:00:01', 'hh:mi:ss'), to_timestamp('1990-1-01 10:00:01', 'yyyy-mm-dd hh:mi:ss'))";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
 		query.clear();
 		PRINT_INFO_END
+
+		PRINT_INFO_BEGIN("Create insert 4th row query")
+		query = "INSERT INTO Table1 (LongField, ULongField, BoolField, NumericField) VALUES (4, 12, 0, 12.3)";
+		PRINT_INFO_END
+		PRINT_INFO_BEGIN("Query to base")
+		connection->execSQL(query);
+		query.clear();
+		PRINT_INFO_END
+
 
 		PRINT_INFO_BEGIN("Create select query")
 		std::stringstream ss;
@@ -144,25 +150,82 @@ void testDataBase() {
 		for(DB::ResultSet::iterator i = rs->begin(); i != rs->end(); ++k, ++i) {
 			std::cout << "row #" << k + 1 << ":" << std::endl;
 			DB::ResultRow &row = *i;
-			std::cout
-				<< "\tLongField = "		<< row[k * 16]->asLong()
-				<< "\n\tULongField = "		<< row[k * 16 + 1]->asULong()
-				<< "\n\tShortField = "		<< row[k * 16 + 2]->asShort()
-				<< "\n\tUShortField = "		<< row[k * 16 + 3]->asUShort()
-				<< "\n\tLongLongField = "	<< row[k * 16 + 4]->asLongLong()
-				<< "\n\tULongLongField = "	<< row[k * 16 + 5]->asULongLong()
-				<< "\n\tFloatField = "		<< row[k * 16 + 6]->asFloat()
-				<< "\n\tDoubleField = "		<< row[k * 16 + 7]->asDouble()
-				<< "\n\tBoolField = '"		<< row[k * 16 + 8]->asBool() // <- char
-	 			<< "'\n\tBoolField = "		<< row[k * 16 + 9]->asBool()
-				<< "\n\tBoolField = '"		<< row[k * 16 + 10]->asBool() // <- string
-				<< "'\n\tBlobField = '"		<< row[k * 16 + 11]->asBlob()
-				<< "'\n\tDateField = "		<< row[k * 16 + 12]->asDate()
-				<< "\n\tTimeField = "		<< row[k * 16 + 13]->asTime()
-				<< "\n\tDateTimeField = "	<< row[k * 16 + 14]->asDateTime()
-				<< "\n\tNumericField = "	<< row[k * 16 + 15]->asNumeric() << std::endl;
-		}
 
+			std::cout << "\tLongField = ";
+			if(row[0]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[0]->asLong() << std::endl;
+
+			std::cout << "\tULongField = ";
+			if(row[1]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[1]->asULong() << std::endl;
+
+			std::cout << "\tShortField = ";
+			if(row[2]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[2]->asShort() << std::endl; 
+
+			std::cout << "\tUShortField = ";
+			if(row[3]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[3]->asUShort() << std::endl;
+
+			std::cout << "\tLongLongField = ";
+			if(row[4]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[4]->asLongLong() << std::endl;
+
+			std::cout << "\tULongLongField = ";
+			if(row[5]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[5]->asULongLong() << std::endl;
+
+			std::cout << "\tFloatField = ";
+			if(row[6]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[6]->asFloat() << std::endl;
+
+			std::cout << "\tDoubleField = ";
+			if(row[7]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[7]->asDouble() << std::endl;
+
+			std::cout << "\tBoolField = ";
+			if(row[8]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[8]->asBool() << std::endl; // <- char
+
+			std::cout << "\tBoolField = ";
+			if(row[9]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[9]->asBool() << std::endl;
+
+			std::cout << "\tBoolField = ";
+			if(row[10]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[10]->asBool() << std::endl; // <- string
+
+			std::cout << "\tBlobField = ";
+			if(row[11]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[11]->asBlob() << std::endl;
+
+			std::cout << "\tDateField = ";
+			if(row[12]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[12]->asDate() << std::endl;
+
+			std::cout << "\tTimeField = ";
+			if(row[13]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[13]->asTime() << std::endl;
+
+			std::cout << "\tDateTimeField = ";
+			if(row[14]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[14]->asDateTime() << std::endl;
+			
+			std::cout << "\tNumericField = ";
+			if(row[15]->isNull()) std::cout << "NULL" << std::endl; 
+			else std::cout << row[15]->asNumeric() << std::endl;
+		}
+/*
+		DB_Oracle::ORACLE_FIELD f;
+		f.name = "olol";
+		f.table = "uu";
+		f.precision = 5;
+		f.scale = 3;
+		DB_Oracle::NumberField * field = new DB_Oracle::NumberField(f, 5);
+		//field->asFloat();
+		field->asChar();
+		delete field;
+*/
 		PRINT_INFO_BEGIN("Drop table")
 		connection->dropObject(table1.get());
 		PRINT_INFO_END

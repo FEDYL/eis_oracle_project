@@ -16,92 +16,72 @@
 //------------------------------------------------------------------------------------------------------
 
 int DB_Oracle::NumberField::asLong() const  {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull()) 
+		throw DB::XDBError("Null field");
+	else
 		return (int)_data;
 }
 
 unsigned int DB_Oracle::NumberField::asULong() const  {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return (unsigned int)_data;
 }
 
 short DB_Oracle::NumberField::asShort() const  {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return (short)_data;
 }
 
 unsigned short DB_Oracle::NumberField::asUShort() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return (unsigned short)_data;
 }
 
 long long DB_Oracle::NumberField::asLongLong() const  {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return (long)_data;
 }
 
 unsigned long long DB_Oracle::NumberField::asULongLong() const  {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return (unsigned long)_data;
 }
 
 bool DB_Oracle::NumberField::asBool() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return !((int)_data == 0);
 }
 
 float DB_Oracle::NumberField::asFloat() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return (float)_data;
 }
 
 double DB_Oracle::NumberField::asDouble() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return (double)_data;
 }
 
 const Numeric & DB_Oracle::NumberField::asNumeric() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return _numeric_data;
 }
 
@@ -120,6 +100,11 @@ std::ostream & DB_Oracle::NumberField::put(std::ostream & os) const {
 	return os;
 }
 
+void DB_Oracle::NumberField::setData(const oracle::occi::Number &data) {
+	isNull(false);
+	_data = data;
+	_numeric_data = Numeric(_prec - _scale, _scale, asDouble());
+}
 
 
 //------------------------------------------------------------------------------------------------------
@@ -127,20 +112,16 @@ std::ostream & DB_Oracle::NumberField::put(std::ostream & os) const {
 //------------------------------------------------------------------------------------------------------
 
 const std::string & DB_Oracle::StringField::asString() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else 
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else 
 		return _data;
 }
 
 char DB_Oracle::StringField::asChar() const {
-	if(isNull() || _data.size() < 1) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull() || _data.size() < 1)
+		throw DB::XDBError("Null field");
+	else
 		return (char)_data[0];
 }
 
@@ -167,29 +148,23 @@ std::ostream & DB_Oracle::StringField::put(std::ostream & os) const {
 
 
 const eis_date::datetime & DB_Oracle::TimestampField::asDateTime() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return _datetime;
 }
 
 const eis_date::time & DB_Oracle::TimestampField::asTime() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return _time;
 }
 
 const eis_date::date & DB_Oracle::TimestampField::asDate() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return _date;
 }
 
@@ -208,6 +183,22 @@ std::ostream & DB_Oracle::TimestampField::put(std::ostream & os) const {
 	return os;
 }
 
+void DB_Oracle::TimestampField::setData(const oracle::occi::Timestamp &data) {
+	isNull(false);
+	unsigned int hour, minute, sec, sc;	// параметры времени.
+	int zone_hour, zone_minute;		// параметры часового пояса.
+	int year; unsigned int month, day;	// параметры даты.
+
+	data.getTime(hour, minute, sec, sc);
+	data.getTimeZoneOffset(zone_hour, zone_minute);
+	data.getDate(year, month, day);
+
+	_time.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
+	_date.set_year_month_day(year, month, day);
+	_datetime.set_hour_min_sec(hour + zone_hour, minute + zone_minute, sec);
+	_datetime.set_year_month_day(year, month, day);
+}
+
 
 
 //------------------------------------------------------------------------------------------------------
@@ -215,11 +206,9 @@ std::ostream & DB_Oracle::TimestampField::put(std::ostream & os) const {
 //------------------------------------------------------------------------------------------------------
 
 const DB::Blob & DB_Oracle::BlobField::asBlob() const {
-	if(isNull()) {
-		DB::XDBError err;
-		err << "Attempt to use a NULL value, by getting data of field \"" << table() << '.' << name() << "\".";
-		throw err;
-	} else
+	if(isNull())
+		throw DB::XDBError("Null field");
+	else
 		return _data;
 }
 
@@ -245,20 +234,20 @@ std::ostream & DB_Oracle::BlobField::put(std::ostream & os) const {
 	return os;
 }
 
-DB::Blob DB_Oracle::BlobField::cast(oracle::occi::Blob data) const {
-	DB::Blob res;
-	int size = data.length();
-	oracle::occi::Stream * instream = data.getStream(1, 0);
+void DB_Oracle::BlobField::setData(const oracle::occi::Blob &data) {
+	isNull(false);
+	oracle::occi::Blob blob = data;
+	int size = blob.length();
+	oracle::occi::Stream * instream = blob.getStream(1, 0);
 	char * buffer = new char[size];
 	memset(buffer, NULL, size);
 	instream->readBuffer(buffer, size);
 	try {
 		base64::Decoder dec((const base64::byte *)buffer, size);
-		res.setData(dec.getlength(), (const char *)dec.getbuffer());
+		_data.setData(dec.getlength(), (const char *)dec.getbuffer());
 	} catch (const base64::XDecodeFail &x) {
-		res.setData(0, NULL);
+		_data.setData(0, NULL);
 	}
-	data.closeStream(instream);
+	blob.closeStream(instream);
 	delete[] buffer;
-	return res;
 }

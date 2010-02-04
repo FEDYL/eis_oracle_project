@@ -40,7 +40,7 @@ void DB::setLogger(Logger::Logger* value) {
 
 DB_Oracle::InternalConnection::InternalConnection(const char * host, const char * user, const char * pass, const char * dbname) : DB::InternalConnection() {
 	if(strlen(dbname))
-		throw DB::XDBError("Data base name is not null.");
+		throw DB::XDBError("Data base name must be equals null-string.");
 	m_orclConn = OracleConnection::createConnection(user, pass, host);
 }
 
@@ -65,19 +65,19 @@ DB::Sequence * DB_Oracle::InternalConnection::createSequence(const std::string &
 }
 
 void DB_Oracle::InternalConnection::getTableStructureFromDB(DB::Table * table) {
-	throw DB::XDBError("Operation is not supported: InternalConnection::getTableStructureFromDB()");
+	throw DB::XDBError("Unsupported operation: InternalConnection::getTableStructureFromDB()");
 }
 
 void DB_Oracle::InternalConnection::createDataBase(const std::string & name) {
-	throw DB::XDBError("Operation is not supported: InternalConnection::createDataBase()");
+	throw DB::XDBError("Unsupported operation: InternalConnection::createDataBase()");
 }
 
 void DB_Oracle::InternalConnection::dropDataBase(const std::string & name) {
-	throw DB::XDBError("Operation is not supported: InternalConnection::dropDataBase()");
+	throw DB::XDBError("Unsupported operation: InternalConnection::dropDataBase()");
 }
 
 void DB_Oracle::InternalConnection::useDataBase(const std::string & name) {
-	throw DB::XDBError("Operation is not supported: InternalConnection::useDataBase()");
+	throw DB::XDBError("Unsupported operation: InternalConnection::useDataBase()");
 }
 
 bool DB_Oracle::InternalConnection::ForeignKey::correspondIndex(Index & index) {
