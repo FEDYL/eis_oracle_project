@@ -6,8 +6,8 @@
 
 DB_Oracle::Transaction::Transaction(DB::InternalConnection * connection) : m_connection(connection), m_lock(connection->getMutex()), m_is_commited(false) {
 	if(!m_connection->isInTransaction()) {
-		DB::Query begin("BEGIN");
-		m_connection->execConstSQL(begin);
+		DB::Query settransaction("SET TRANSACTION READ WRITE");
+		m_connection->execConstSQL(settransaction);
 	}
 	m_connection->m_transaction_count++;
 	m_connection->m_transaction_rolled_back = false;

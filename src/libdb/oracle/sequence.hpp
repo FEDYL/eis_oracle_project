@@ -16,12 +16,6 @@ private:
 	//! Конструктор
 	/*!
 	  \param name - наименование генератора.
-	  Создает объект с наименованием name. 
-	 */
-	Sequence(const std::string & name, const unsigned int initial_value = 0);
-	//! Конструктор
-	/*!
-	  \param name - наименование генератора.
 	  \param connection - соединение с базой вестимо.
 	  Создает объект с наименованием name. 
 	 */
@@ -29,7 +23,7 @@ private:
 
 public:
 	//! Деструктор.
-	virtual ~Sequence() {};
+	virtual ~Sequence() { drop(); }
 
 	//! Реализация метода DB::Sequence::getNextVal().
 	unsigned long long getNextVal(unsigned int increment = 1);

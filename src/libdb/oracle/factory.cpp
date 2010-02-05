@@ -22,5 +22,6 @@ DB::Connection * DB_Oracle::Factory::createNoLogConnection(const char * host, co
 }
 
 DB::Sequence * DB_Oracle::Factory::createSequence(const std::string & name, unsigned int initial_value) {
-	return( new Sequence(name, initial_value) );
+	throw DB::XDBError("Unsupported operation: Factory::createSequence()");
+	return NULL;
 }

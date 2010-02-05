@@ -18,6 +18,9 @@ public:
 	virtual DB::Connection * createNoLogConnection(const char * host, const char * user, const char * pass, const char * dbname = "");
 
 	//! Реализация метода DB::Factory::createSequence().
+	/*!
+	  Бросает исключение, что метод не поддерживается. Sequence без привязки к конкретному подключению смысла не имеет.
+	 */
 	virtual DB::Sequence * createSequence(const std::string & name, unsigned int initial_value = 0);
 
 private:

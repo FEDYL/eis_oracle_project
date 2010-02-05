@@ -26,10 +26,26 @@ void testDataBase() {
 	try {
 		PRINT_INFO_BEGIN("Connection") 
 		DB::Connection_ptr connection = DB::Factory::getInstance()->createNoLogConnection("", USER, PASS);
-                PRINT_INFO_END
+		PRINT_INFO_END
+
+		PRINT_INFO_BEGIN("Drop old sequence")
+		bool flag = false;
+		try {
+			query = "DROP sequence myseq";
+			connection->execSQL(query);
+		} catch (const DB::XDBError &x) {
+			flag = true;
+		}
+		if(flag) PRINT_INFO("no")
+		else PRINT_INFO("yes")
+		
+		PRINT_INFO_BEGIN("Create sequence")
+		DB::Sequence_ptr myseq = connection->createSequence("myseq"); // начальное значение равно 0.
+		myseq->getNextVal(); // теперь 1.
+		PRINT_INFO_END
 
 		PRINT_INFO_BEGIN("Drop old table")
-		bool flag = false;
+		flag = false;
 		try {
 			query = "DROP TABLE Table1";
 			connection->execSQL(query);
@@ -101,7 +117,8 @@ void testDataBase() {
 		PRINT_INFO_END
 
 		PRINT_INFO_BEGIN("Create insert 1st row query")
-		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField,  StringField, BlobField, DateField, NumericField) VALUES (1, 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, 'e', 1, 'One', '0', to_date('2009-10-20','yyyy-mm-dd'), 123.12)";
+		query.clear();
+		query << "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, FloatField, DoubleField, CharField, BoolField,  StringField, BlobField, DateField, NumericField) VALUES (" << myseq->getNextVal(100) << ", 2000, -12, 2332, -1234543, 323434, 3.4, 34532.463, 'e', 1, 'One', '0', to_date('2009-10-20','yyyy-mm-dd'), 123.12)";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -109,7 +126,7 @@ void testDataBase() {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 2nd row query")
-		query = "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, CharField, BoolField,  StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (2, 0, -2, 123, 9887, 999826, '0', 0, 'Two', '0', to_date('1990-01-01','yyyy-mm-dd'), to_timestamp('9:00', 'hh:mi'), to_timestamp('1990-01-01 08:00', 'yyyy-mm-dd hh:mi'))";
+		query << "INSERT INTO Table1 (LongField, ULongField, ShortField, UShortField, LongLongField, ULongLongField, CharField, BoolField,  StringField, BlobField, DateField, TimeField, DateTimeField) VALUES (" << myseq->getNextVal() << ", 0, -2, 123, 9887, 999826, '0', 0, 'Two', '0', to_date('1990-01-01','yyyy-mm-dd'), to_timestamp('9:00', 'hh:mi'), to_timestamp('1990-01-01 08:00', 'yyyy-mm-dd hh:mi'))";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -117,7 +134,7 @@ void testDataBase() {
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create insert 3rd row query")
-		query = "INSERT INTO Table1 (LongField, DateField, TimeField, DateTimeField) VALUES (3, to_date('1997-12-31','yyyy-mm-dd'), to_timestamp('3:00:01', 'hh:mi:ss'), to_timestamp('1990-1-01 10:00:01', 'yyyy-mm-dd hh:mi:ss'))";
+		query << "INSERT INTO Table1 (LongField, DateField, TimeField, DateTimeField) VALUES (" << myseq->getNextVal() << ", to_date('1997-12-31','yyyy-mm-dd'), to_timestamp('3:00:01', 'hh:mi:ss'), to_timestamp('1990-1-01 10:00:01', 'yyyy-mm-dd hh:mi:ss'))";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -125,7 +142,7 @@ void testDataBase() {
 		PRINT_INFO_END
 
 		PRINT_INFO_BEGIN("Create insert 4th row query")
-		query = "INSERT INTO Table1 (LongField, ULongField, BoolField, NumericField) VALUES (4, 12, 0, 12.3)";
+		query << "INSERT INTO Table1 (LongField, ULongField, BoolField, NumericField) VALUES (" << myseq->getNextVal() << ", 12, 0, 12.3)";
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Query to base")
 		connection->execSQL(query);
@@ -226,6 +243,7 @@ void testDataBase() {
 		field->asChar();
 		delete field;
 */
+
 		PRINT_INFO_BEGIN("Drop table")
 		connection->dropObject(table1.get());
 		PRINT_INFO_END
