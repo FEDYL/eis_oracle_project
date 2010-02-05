@@ -136,7 +136,7 @@ void testDataBase() {
 		PRINT_INFO_BEGIN("Create select query")
 		std::stringstream ss;
 		ss << "SELECT " << "LongField, " << "ULongField, " << "ShortField, " << "UShortField, " << "LongLongField, " << "ULongLongField, "
-		<< "FloatField, " << "DoubleField, " << "BoolField, " /* char */ << "BoolField, " << "BoolField, " /* string */ << "BlobField, " 
+		<< "FloatField, " << "DoubleField, " << "CharField, " /* char */ << "BoolField, " << "StringField, " /* string */ << "BlobField, " 
 		<< "DateField, " << "TimeField, " << "DateTimeField, " << "NumericField FROM Table1";
 		query = ss.str();
 		PRINT_INFO_END
@@ -183,17 +183,17 @@ void testDataBase() {
 			if(row[7]->isNull()) std::cout << "NULL" << std::endl; 
 			else std::cout << row[7]->asDouble() << std::endl;
 
-			std::cout << "\tBoolField = ";
+			std::cout << "\tCharField = ";
 			if(row[8]->isNull()) std::cout << "NULL" << std::endl; 
-			else std::cout << row[8]->asBool() << std::endl; // <- char
+			else std::cout << row[8]->asChar() << std::endl; // <- char
 
 			std::cout << "\tBoolField = ";
 			if(row[9]->isNull()) std::cout << "NULL" << std::endl; 
 			else std::cout << row[9]->asBool() << std::endl;
 
-			std::cout << "\tBoolField = ";
+			std::cout << "\tStringField = ";
 			if(row[10]->isNull()) std::cout << "NULL" << std::endl; 
-			else std::cout << row[10]->asBool() << std::endl; // <- string
+			else std::cout << row[10]->asString() << std::endl; // <- string
 
 			std::cout << "\tBlobField = ";
 			if(row[11]->isNull()) std::cout << "NULL" << std::endl; 

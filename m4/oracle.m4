@@ -43,7 +43,7 @@ fi
 
 OCCI_INCLUDES="${occi_headers_dir}"
 dnl===============================================================================
-dnl occi-libs (libocci.so.10.1)
+dnl occi-libs (libocci.so.11.1)
 AC_ARG_WITH(occi-libs,
 [  --with-occi-libs    root directory where OCCI's libs installed],
 if test "$withval" != "no" -a "$withval" != "yes"
