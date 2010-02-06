@@ -1,33 +1,52 @@
 #include "Tests.h"
 
 void testForeignKey() {
-	bool isDropOldDB = false;
 	DB_Oracle::Factory::createInstance();
+	DB::Query query;
 	PRINT_INFO("\nTEST FOREIGN KEY")
 	try {
 		PRINT_INFO_BEGIN("Connection") 
 		DB::Connection_ptr connection = DB::Factory::getInstance()->createNoLogConnection(HOST, USER, PASS);
                 PRINT_INFO_END
 
-		if (isDropOldDB) {
-			PRINT_INFO_BEGIN("Drop old base")		
-			connection->dropDataBase("libdbtest");
-			PRINT_INFO_END	
-		}
 
+		PRINT_INFO_BEGIN("Drop old table A")
+		bool flag = false;
+		try {
+			query = "DROP TABLE TableA";
+			connection->execSQL(query);
+			query.clear();
+		} catch (const DB::XDBError &x) {
+			flag = true;
+		}
+		if(flag) PRINT_INFO("no")
+		else PRINT_INFO("yes")
+
+		PRINT_INFO_BEGIN("Drop old table B")
+		flag = false;
+		try {
+			query = "DROP TABLE TableB";
+			connection->execSQL(query);
+			query.clear();
+		} catch (const DB::XDBError &x) {
+			flag = true;
+		}
+		if(flag) PRINT_INFO("no")
+		else PRINT_INFO("yes")
+		/*
 		PRINT_INFO_BEGIN("Create base")
 		connection->createDataBase("libdbtest");
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Use Base")
 		connection->useDataBase("libdbtest");
 		PRINT_INFO_END
+		*/
 
 		PRINT_INFO_BEGIN("Create table A")
 		DB::Table_ptr tableA = DB::Factory::getInstance()->createTable("TableA");
-		tableA->addFieldDef( new DB::LongFieldDef("a") );
-		tableA->addFieldDef( new DB::FloatFieldDef("b") );
-		tableA->addFieldDef( new DB::StringFieldDef("c") );
-		tableA->addFieldDef( new DB::TimeFieldDef("d") );
+		tableA->addFieldDef( new DB_Oracle::LongFieldDef("a") );
+		tableA->addFieldDef( new DB_Oracle::FloatFieldDef("b") );
+		tableA->addFieldDef( new DB_Oracle::StringFieldDef("c") );
 		tableA->addPrimaryKey().addFieldDef("a");
 		PRINT_INFO_END
 		PRINT_INFO_BEGIN("Add table A to base")
@@ -35,23 +54,22 @@ void testForeignKey() {
 		PRINT_INFO_END
 
 		PRINT_INFO_BEGIN("Insert rows to table A")
-		DB::Query query;
-		query = "INSERT INTO TableA (a, b, c, d) VALUES (1, 2.2, \"One\", \"20:23:14\")";
+		query = "INSERT INTO TableA (a, b, c) VALUES (1, 2.2, 'One')";
 		connection->execSQL(query);
 		query.clear();
-		query = "INSERT INTO TableA (a, b, c, d) VALUES (2, -3.4, \"Two\", \"21:00\")";
+		query = "INSERT INTO TableA (a, b, c) VALUES (2, -3.4, 'Two')";
 		connection->execSQL(query);
 		query.clear();
-		query = "INSERT INTO TableA (a, b, c, d) VALUES (3, 0.0, \"Three\", \"23:59:59\")";
+		query = "INSERT INTO TableA (a, b, c) VALUES (3, 0.0, 'Three')";
 		connection->execSQL(query);
 		query.clear();
 		PRINT_INFO_END
 		
 		PRINT_INFO_BEGIN("Create table B")
 		DB::Table_ptr tableB = DB::Factory::getInstance()->createTable("TableB");
-		tableB->addFieldDef( new DB::LongFieldDef("x") );
-		tableB->addFieldDef( new DB::DateFieldDef("y") );
-		tableB->addFieldDef( new DB::LongFieldDef("z") );
+		tableB->addFieldDef( new DB_Oracle::LongFieldDef("x") );
+		tableB->addFieldDef( new DB_Oracle::DateFieldDef("y") );
+		tableB->addFieldDef( new DB_Oracle::LongFieldDef("z") );
 		tableB->addPrimaryKey().addFieldDef("x");
 		tableB->addForeignKey("a", "TableA", DB::ForeignKey::ON_DELETE_SET_NULL).addReference("z", "a"); 
 		PRINT_INFO_END
@@ -99,11 +117,12 @@ void testForeignKey() {
 		connection->dropObject(tableB.get());
 		connection->dropObject(tableA.get());
 		PRINT_INFO_END
+		/*
 		PRINT_INFO_BEGIN("Drop base")
 		connection->dropDataBase("libdbtest");	
 		PRINT_INFO_END
 		PRINT_INFO("\n")
-
+		*/
 	} catch(const DB::XDBError &x) {
 		std::cout << "no\nOops! " << x << '\n' << std::endl;
 	}
