@@ -4,19 +4,19 @@ struct DATA {
 	DATA() : _id_1(0), _id_2(0), _id_3(0), _snum_1(0), _snum_2(0), _snum_3(0), _ch_1(0), _ch_2(0), _ch_3(0) { }
 
 	void setFirstRow(int id, unsigned int simpleNumber, char ch) {
-		std::cout << "\trow #1: (" << id << ", " << simpleNumber << ", '" << ch << "')" << std::endl;
+		//std::cout << "\trow #1: (" << id << ", " << simpleNumber << ", '" << ch << "')" << std::endl;
 		_id_1 = id;
 		_snum_1 = simpleNumber;
 		_ch_1 = ch;
 	}
 	void setSecondRow(int id, unsigned int simpleNumber, char ch) {
-		std::cout << "\trow #2: (" << id << ", " << simpleNumber << ", '" << ch << "')" << std::endl;
+		//std::cout << "\trow #2: (" << id << ", " << simpleNumber << ", '" << ch << "')" << std::endl;
 		_id_2 = id;
 		_snum_2 = simpleNumber;
 		_ch_2 = ch;
 	}
 	void setThirdRow(int id, unsigned int simpleNumber, char ch) {
-		std::cout << "\trow #3: (" << id << ", " << simpleNumber << ", '" << ch << "')" << std::endl;
+		//std::cout << "\trow #3: (" << id << ", " << simpleNumber << ", '" << ch << "')" << std::endl;
 		_id_3 = id;
 		_snum_3 = simpleNumber;
 		_ch_3 = ch;
@@ -45,7 +45,7 @@ bool isAllDataEquals(const std::vector<DATA> &data) {
 
 void testIterator() {
 	std::vector<DATA> data;
-	DATA d;
+	DATA d, f, g;
 
 	DB_Oracle::Factory::createInstance();
 	DB::Query query;
@@ -103,7 +103,7 @@ void testIterator() {
 		query = "SELECT * FROM IteratorTest";
 		DB::AutoResultSet rs( connection->execSQL(query) );
 
-		PRINT_INFO("First iterator:")
+		PRINT_INFO_BEGIN("Create iterators")
 		unsigned int k = 0;
 		for(DB::ResultSet::iterator i = rs->begin(); i != rs->end(); ++i, ++k) {
 			DB::ResultRow &row = *i;
@@ -116,10 +116,9 @@ void testIterator() {
 		data.push_back(d);
 		d.clear();
 
-		PRINT_INFO("Second iterator:")
 		k = 0;
-		for(DB::ResultSet::iterator i = rs->begin(); i != rs->end(); ++i, ++k) {
-			DB::ResultRow &row = *i;
+		for(DB::ResultSet::iterator j = rs->begin(); j != rs->end(); ++j, ++k) {
+			DB::ResultRow &row = *j;
 			switch(k) {
 			case 0: d.setFirstRow(row[0]->asLong(), row[1]->asULong(), row[2]->asChar()); break;
 			case 1: d.setSecondRow(row[0]->asLong(), row[1]->asULong(), row[2]->asChar()); break;
@@ -127,11 +126,13 @@ void testIterator() {
 			}
 		}
 		data.push_back(d);
+		d.clear();
+		PRINT_INFO_END
 		
 		if(isAllDataEquals(data)) PRINT_INFO("All iterators getting equals data")
 		else PRINT_INFO("Iterators getting not equals data")
 
-		
+
 		PRINT_INFO_BEGIN("Drop table")
 		connection->dropObject(table.get());
 		PRINT_INFO_END

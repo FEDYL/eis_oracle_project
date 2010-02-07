@@ -69,15 +69,21 @@ void DB_Oracle::InternalConnection::getTableStructureFromDB(DB::Table * table) {
 }
 
 void DB_Oracle::InternalConnection::createDataBase(const std::string & name) {
-	throw DB::XDBError("Unsupported operation: InternalConnection::createDataBase()");
+	DB::Query query;
+	query << "CREATE DATABASE " << name;
+	execConstSQL(query);
 }
 
 void DB_Oracle::InternalConnection::dropDataBase(const std::string & name) {
-	throw DB::XDBError("Unsupported operation: InternalConnection::dropDataBase()");
+	DB::Query query;
+	query << "DROP DATABASE " << name;
+	execConstSQL(query);
 }
 
 void DB_Oracle::InternalConnection::useDataBase(const std::string & name) {
-	throw DB::XDBError("Unsupported operation: InternalConnection::useDataBase()");
+	DB::Query query;
+	query << "USE " << name;
+	execConstSQL(query);
 }
 
 bool DB_Oracle::InternalConnection::ForeignKey::correspondIndex(Index & index) {
