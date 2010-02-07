@@ -6,7 +6,7 @@ LIBDBDIR=$(SRCDIR)/libdb
 INCLUDES = -I$(IS_MTINCLUDES) -I$(SRCDIR) -I$(top_srcdir)/build/include -I$(IS_ILUINCLUDE) $(FIXED_INCLUDES) -I$(OCCI_INCLUDES)
 
 test_PROGRAMS=Test
-Test_SOURCES=Test.cpp Tests.h TestForeignKey.cpp TestDataBase.cpp TestOCCI.cpp
+Test_SOURCES=Test.cpp Tests.h TestForeignKey.cpp TestDataBase.cpp TestOCCI.cpp TestIterator.cpp
 
 Test_LDFLAGS=$(IS_ILU_CPPFLAGS)
 Test_LDADD=\

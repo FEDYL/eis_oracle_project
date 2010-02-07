@@ -25,5 +25,6 @@
 void testDataBase();
 void testForeignKey();
 void testOCCI();
+void testIterator();
 
 #endif //__TestsH__
